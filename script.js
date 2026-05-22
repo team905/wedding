@@ -44,7 +44,7 @@
     });
 
     // ===== COUNTDOWN =====
-    const weddingDate = new Date('2026-12-14T10:00:00+05:30').getTime();
+    const weddingDate = new Date('2026-07-22T12:30:00+05:30').getTime();
 
     function updateCountdown() {
         const diff = weddingDate - Date.now();
@@ -205,16 +205,17 @@
 
     // ===== SAVE TO CALENDAR =====
     document.getElementById('saveCalBtn').addEventListener('click', () => {
+        // 22 July 2026, 12:30 PM IST → 07:00 UTC; end 17:00 IST → 11:30 UTC
         const icsContent = [
             'BEGIN:VCALENDAR',
             'VERSION:2.0',
             'PRODID:-//Wedding//EN',
             'BEGIN:VEVENT',
-            'DTSTART:20261214T043000Z',
-            'DTEND:20261214T133000Z',
-            'SUMMARY:Aarav & Meera Wedding',
+            'DTSTART:20260722T070000Z',
+            'DTEND:20260722T113000Z',
+            'SUMMARY:Shubham & Vaibhavi Wedding',
             'DESCRIPTION:Lagna Vidhi - Maharashtrian Wedding Ceremony',
-            'LOCATION:Taj Lakefront\\, Baner-Pashan Link Road\\, Pune\\, Maharashtra 411045',
+            'LOCATION:Samarth Lawns\\, Mahabal Road\\, Jalgaon\\, Maharashtra 425001',
             'END:VEVENT',
             'END:VCALENDAR'
         ].join('\r\n');
@@ -223,7 +224,7 @@
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = 'aarav-meera-wedding.ics';
+        link.download = 'shubham-vaibhavi-wedding.ics';
         link.click();
         URL.revokeObjectURL(url);
 
@@ -233,8 +234,8 @@
     // ===== SHARE INVITATION =====
     document.getElementById('shareBtn').addEventListener('click', async () => {
         const shareData = {
-            title: 'Aarav & Meera Wedding',
-            text: 'You\'re invited to the wedding of Aarav & Meera on December 14, 2026 in Pune. We\'d love to celebrate with you!',
+            title: 'Shubham & Vaibhavi Wedding',
+            text: 'You\'re invited to the wedding of Shubham & Vaibhavi on 22 July 2026 at Samarth Lawns, Jalgaon. We\'d love to celebrate with you!',
             url: window.location.href
         };
 
@@ -251,7 +252,7 @@
     });
 
     function copyToClipboard() {
-        const text = `You're invited! Aarav & Meera's Wedding — Dec 14, 2026, Pune. ${window.location.href}`;
+        const text = `You're invited! Shubham & Vaibhavi's Wedding — 22 July 2026, Samarth Lawns, Jalgaon. ${window.location.href}`;
         navigator.clipboard.writeText(text).then(() => {
             showToast('Link copied to clipboard!');
         }).catch(() => {
@@ -271,32 +272,6 @@
         toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
         if (navigator.vibrate) navigator.vibrate(30);
     }
-
-    // ===== MUSIC PLAYER =====
-    const musicPlayer = document.getElementById('musicPlayer');
-    const musicToggle = document.getElementById('musicToggle');
-    const musicProgress = document.getElementById('musicProgress');
-    let isPlaying = false;
-    let musicInterval;
-    let progress = 0;
-
-    // Show player after scroll
-    setTimeout(() => musicPlayer.classList.add('visible'), 3000);
-
-    musicToggle.addEventListener('click', () => {
-        isPlaying = !isPlaying;
-        musicPlayer.classList.toggle('playing', isPlaying);
-
-        if (isPlaying) {
-            musicInterval = setInterval(() => {
-                progress = (progress + 0.3) % 100;
-                musicProgress.style.width = progress + '%';
-            }, 100);
-            showToast('Now playing: Tujh Mein Rab Dikhta Hai');
-        } else {
-            clearInterval(musicInterval);
-        }
-    });
 
     // ===== BLESSINGS WALL =====
     const blessingForm = document.getElementById('blessingForm');
@@ -355,7 +330,7 @@
         setTimeout(() => {
             rsvpForm.style.display = 'none';
             rsvpSuccess.classList.add('show');
-            showToast('RSVP confirmed! See you there 🎉');
+            showToast('Attendance confirmed! See you there 🎉');
             if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
         }, 1500);
     });

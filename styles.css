@@ -270,10 +270,10 @@ ul, ol { list-style: none; }
     inset: 0;
     background: linear-gradient(
         to bottom,
-        rgba(139,30,0,0.15) 0%,
-        rgba(0,0,0,0.25) 40%,
-        rgba(0,0,0,0.7) 80%,
-        rgba(0,0,0,0.88) 100%
+        rgba(0,0,0,0.05) 0%,
+        rgba(0,0,0,0.15) 35%,
+        rgba(20,10,5,0.55) 75%,
+        rgba(10,5,2,0.82) 100%
     );
 }
 
@@ -304,12 +304,21 @@ ul, ol { list-style: none; }
     color: #fff;
 }
 
+.hero-blessings {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.15rem;
+    margin-bottom: 1.25rem;
+}
 .hero-blessing {
-    font-size: 0.85rem;
-    font-weight: 300;
-    color: rgba(212,175,55,0.85);
-    letter-spacing: 2px;
-    margin-bottom: 1rem;
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: #d6a878;
+    letter-spacing: 1.5px;
+    margin: 0;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.45);
+    line-height: 1.7;
 }
 
 .hero-badge {
