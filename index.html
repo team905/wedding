@@ -79,19 +79,21 @@
         <!-- Hero / Home -->
         <section id="home" class="hero">
             <div class="hero-bg">
-                <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=1600&q=80" alt="Wedding couple" class="hero-bg-img">
+                <img src="assets/hero-mandap.png" alt="Maharashtrian Wedding Mandap with Ganesha and floral decor" class="hero-bg-img">
                 <div class="hero-bg-overlay"></div>
+                <div class="hero-mandap-border"></div>
             </div>
             <div class="hero-body">
                 <div class="hero-badge">
-                    <span>We're Getting Married</span>
+                    <span>शुभ विवाह · Shubh Vivah</span>
                 </div>
+                <p class="hero-blessing">॥ श्री गणेशाय नमः ॥</p>
                 <h1 class="hero-title">
                     <span class="hero-name">Aarav</span>
                     <span class="hero-and">&</span>
                     <span class="hero-name">Meera</span>
                 </h1>
-                <p class="hero-location">New Delhi, India</p>
+                <p class="hero-location">Pune, Maharashtra</p>
                 <div class="hero-countdown" id="countdown">
                     <div class="cd-block">
                         <span class="cd-num" id="cd-days">209</span>
@@ -118,9 +120,42 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
             </div>
+            <!-- Quick Actions (floating pills) -->
+            <div class="hero-actions">
+                <button class="hero-action-pill" id="saveCalBtn" aria-label="Save the Date">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    Save Date
+                </button>
+                <button class="hero-action-pill" id="shareBtn" aria-label="Share Invitation">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                    Share
+                </button>
+            </div>
             <div class="hero-scroll">
                 <span>Scroll to explore</span>
                 <div class="hero-scroll-line"></div>
+            </div>
+        </section>
+
+        <!-- Couple Stats (premium) -->
+        <section class="stats-strip">
+            <div class="stats-scroll">
+                <div class="stat-item">
+                    <span class="stat-num" data-target="2010">0</span>
+                    <span class="stat-label">Days Together</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-num" data-target="14">0</span>
+                    <span class="stat-label">Countries Visited</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-num" data-target="1">0</span>
+                    <span class="stat-label">Forever Promise</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-num" data-target="500">0</span>
+                    <span class="stat-label">Guests Invited</span>
+                </div>
             </div>
         </section>
 
@@ -180,7 +215,7 @@
                             <div class="timeline-content">
                                 <span class="timeline-date">Dec 2023</span>
                                 <strong>The Proposal</strong>
-                                <p>A misty morning in Udaipur. Lake Pichola reflecting the palace. She said yes before he finished asking.</p>
+                                <p>A monsoon evening at Sinhagad Fort, overlooking the Sahyadris. With the valley draped in clouds, he asked. She said yes before he finished.</p>
                             </div>
                         </div>
                         <div class="timeline-item">
@@ -208,19 +243,19 @@
                 <div class="events-scroll">
                     <div class="event-card anim-up">
                         <div class="event-card-header">
-                            <img src="https://images.unsplash.com/photo-1583089892943-e02e5b017b6a?w=600&q=80" alt="Mehendi" loading="lazy">
+                            <img src="https://images.unsplash.com/photo-1583089892943-e02e5b017b6a?w=600&q=80" alt="Haldi Ceremony" loading="lazy">
                             <div class="event-card-badge">Day 1</div>
                         </div>
                         <div class="event-card-body">
-                            <h3>Mehendi</h3>
+                            <h3>Haldi & Mehendi</h3>
                             <div class="event-meta">
                                 <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>Dec 12, 2026</span>
-                                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>3 PM – 8 PM</span>
+                                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>10 AM – 6 PM</span>
                             </div>
-                            <p>Intricate henna art, live folk music, and an intimate gathering in the garden pavilion.</p>
+                            <p>Traditional turmeric ceremony followed by mehendi. Marigold decor, dhol beats, and family blessings under the shamiana.</p>
                             <div class="event-footer">
-                                <span class="event-venue-tag">Garden Pavilion</span>
-                                <span class="event-dress-tag">Colorful & Festive</span>
+                                <span class="event-venue-tag">Wada Courtyard</span>
+                                <span class="event-dress-tag">Yellow & Traditional</span>
                             </div>
                         </div>
                     </div>
@@ -231,34 +266,34 @@
                             <div class="event-card-badge">Day 2</div>
                         </div>
                         <div class="event-card-body">
-                            <h3>Sangeet Night</h3>
+                            <h3>Sangeet & Kelvan</h3>
                             <div class="event-meta">
                                 <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>Dec 13, 2026</span>
                                 <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>7 PM – 1 AM</span>
                             </div>
-                            <p>A spectacular evening of choreographed performances, live band, cocktails, and non-stop dancing.</p>
+                            <p>Traditional Maharashtrian sangeet with lavani performances, dholki beats, family acts, and a grand feast of Maharashtrian cuisine.</p>
                             <div class="event-footer">
-                                <span class="event-venue-tag">Grand Ballroom</span>
-                                <span class="event-dress-tag">Cocktail / Indo-Western</span>
+                                <span class="event-venue-tag">Banquet Hall</span>
+                                <span class="event-dress-tag">Nauvari / Festive Marathi</span>
                             </div>
                         </div>
                     </div>
 
                     <div class="event-card event-card-featured anim-up">
                         <div class="event-card-header">
-                            <img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?w=600&q=80" alt="Wedding" loading="lazy">
+                            <img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?w=600&q=80" alt="Wedding Ceremony" loading="lazy">
                             <div class="event-card-badge badge-gold">Main Event</div>
                         </div>
                         <div class="event-card-body">
-                            <h3>Wedding Ceremony</h3>
+                            <h3>Lagna Vidhi</h3>
                             <div class="event-meta">
                                 <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>Dec 14, 2026</span>
-                                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>10 AM – 2 PM</span>
+                                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Muhurat: 11:30 AM</span>
                             </div>
-                            <p>The sacred ceremony where two souls become one. Exchange of vows, pheras, and the beginning of forever.</p>
+                            <p>Sacred Maharashtrian wedding with Antarpat, Mangalashtak, Saptapadi, and Kanya Daan rituals. Blessings under the holy mandap.</p>
                             <div class="event-footer">
-                                <span class="event-venue-tag">Royal Courtyard</span>
-                                <span class="event-dress-tag">Traditional Indian Formal</span>
+                                <span class="event-venue-tag">Mandap · Main Lawn</span>
+                                <span class="event-dress-tag">Traditional Maharashtrian</span>
                             </div>
                         </div>
                     </div>
@@ -266,18 +301,18 @@
                     <div class="event-card anim-up">
                         <div class="event-card-header">
                             <img src="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=600&q=80" alt="Reception" loading="lazy">
-                            <div class="event-card-badge">Day 3</div>
+                            <div class="event-card-badge">Evening</div>
                         </div>
                         <div class="event-card-body">
-                            <h3>Grand Reception</h3>
+                            <h3>Reception & Gruh Pravesh</h3>
                             <div class="event-meta">
                                 <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>Dec 14, 2026</span>
                                 <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>7 PM – 12 AM</span>
                             </div>
-                            <p>Black-tie evening with gourmet dining, open bar, toasts, and an unforgettable celebration with our closest people.</p>
+                            <p>Grand reception with traditional aarti, Maharashtrian thali, live music, and celebration of the newlyweds beginning their journey together.</p>
                             <div class="event-footer">
-                                <span class="event-venue-tag">Crystal Hall</span>
-                                <span class="event-dress-tag">Black Tie / Formal</span>
+                                <span class="event-venue-tag">Grand Ballroom</span>
+                                <span class="event-dress-tag">Formal / Silk Saree</span>
                             </div>
                         </div>
                     </div>
@@ -294,10 +329,10 @@
                 </header>
 
                 <div class="venue-hero anim-up">
-                    <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200&q=80" alt="The Leela Palace" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200&q=80" alt="Taj Lakefront Pune" loading="lazy">
                     <div class="venue-hero-overlay">
-                        <h3>The Leela Palace</h3>
-                        <p>New Delhi</p>
+                        <h3>Taj Lakefront, Pune</h3>
+                        <p>Baner, Pune, Maharashtra</p>
                     </div>
                 </div>
 
@@ -306,7 +341,7 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                         <div>
                             <strong>Address</strong>
-                            <p>Diplomatic Enclave, Chanakyapuri, New Delhi 110023</p>
+                            <p>Baner-Pashan Link Road, Baner, Pune, Maharashtra 411045</p>
                         </div>
                     </div>
                     <div class="venue-info-card">
@@ -316,7 +351,7 @@
                             <p>Complimentary valet parking for all guests</p>
                         </div>
                     </div>
-                    <a href="https://maps.google.com/?q=The+Leela+Palace+New+Delhi" target="_blank" rel="noopener" class="venue-map-link">
+                    <a href="https://maps.google.com/?q=Taj+Lakefront+Pune" target="_blank" rel="noopener" class="venue-map-link">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
                         Open in Google Maps
                     </a>
@@ -324,49 +359,58 @@
             </div>
         </section>
 
-        <!-- Gallery -->
+        <!-- Gallery (Swipeable Carousel + Masonry) -->
         <section id="gallery" class="section section-alt">
             <div class="container">
                 <header class="sec-header anim-up">
                     <span class="sec-tag">Memories</span>
                     <h2 class="sec-title">Our Gallery</h2>
-                    <p class="sec-desc">Moments we'll cherish forever</p>
+                    <p class="sec-desc">Swipe to explore our journey</p>
                 </header>
 
-                <div class="gallery-masonry anim-up">
-                    <div class="gallery-col">
-                        <div class="gallery-img">
-                            <img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=600&q=80" alt="Together" loading="lazy">
+                <!-- Swipeable Carousel -->
+                <div class="carousel anim-up" id="galleryCarousel">
+                    <div class="carousel-track">
+                        <div class="carousel-slide">
+                            <img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=800&q=80" alt="Together" loading="lazy">
+                            <div class="carousel-caption">Our first trip together</div>
                         </div>
-                        <div class="gallery-img">
-                            <img src="https://images.unsplash.com/photo-1529634597503-139d3726fed5?w=600&q=80" alt="Moments" loading="lazy">
+                        <div class="carousel-slide">
+                            <img src="https://images.unsplash.com/photo-1460364157752-926555571a37?w=800&q=80" alt="Love" loading="lazy">
+                            <div class="carousel-caption">Where it all started</div>
                         </div>
-                        <div class="gallery-img">
-                            <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=600&q=80" alt="Joy" loading="lazy">
+                        <div class="carousel-slide">
+                            <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800&q=80" alt="Celebration" loading="lazy">
+                            <div class="carousel-caption">Engagement day</div>
                         </div>
-                    </div>
-                    <div class="gallery-col">
-                        <div class="gallery-img">
-                            <img src="https://images.unsplash.com/photo-1460364157752-926555571a37?w=600&q=80" alt="Love" loading="lazy">
+                        <div class="carousel-slide">
+                            <img src="https://images.unsplash.com/photo-1520854221256-17451cc331bf?w=800&q=80" alt="Pre-wedding" loading="lazy">
+                            <div class="carousel-caption">Pre-wedding shoot</div>
                         </div>
-                        <div class="gallery-img">
-                            <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=600&q=80" alt="Celebration" loading="lazy">
+                        <div class="carousel-slide">
+                            <img src="https://images.unsplash.com/photo-1529634597503-139d3726fed5?w=800&q=80" alt="Moments" loading="lazy">
+                            <div class="carousel-caption">Candid moments</div>
                         </div>
-                        <div class="gallery-img">
-                            <img src="https://images.unsplash.com/photo-1544078751-58fee2d8a03b?w=600&q=80" alt="Adventure" loading="lazy">
-                        </div>
-                    </div>
-                    <div class="gallery-col gallery-col-desktop">
-                        <div class="gallery-img">
-                            <img src="https://images.unsplash.com/photo-1520854221256-17451cc331bf?w=600&q=80" alt="Pre-wedding" loading="lazy">
-                        </div>
-                        <div class="gallery-img">
-                            <img src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=600&q=80" alt="Engagement" loading="lazy">
-                        </div>
-                        <div class="gallery-img">
-                            <img src="https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=600&q=80" alt="Family" loading="lazy">
+                        <div class="carousel-slide">
+                            <img src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=800&q=80" alt="Nature" loading="lazy">
+                            <div class="carousel-caption">Sahyadri adventure</div>
                         </div>
                     </div>
+                    <div class="carousel-dots" id="carouselDots"></div>
+                    <button class="carousel-arrow carousel-prev" id="carouselPrev" aria-label="Previous">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+                    </button>
+                    <button class="carousel-arrow carousel-next" id="carouselNext" aria-label="Next">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                    </button>
+                </div>
+
+                <!-- Mini Grid Below -->
+                <div class="gallery-mini-grid anim-up">
+                    <div class="gallery-img"><img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=400&q=80" alt="Joy" loading="lazy"></div>
+                    <div class="gallery-img"><img src="https://images.unsplash.com/photo-1544078751-58fee2d8a03b?w=400&q=80" alt="Adventure" loading="lazy"></div>
+                    <div class="gallery-img"><img src="https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=400&q=80" alt="Family" loading="lazy"></div>
+                    <div class="gallery-img"><img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=400&q=80" alt="Together" loading="lazy"></div>
                 </div>
             </div>
         </section>
@@ -445,13 +489,13 @@
                             <div class="info-card">
                                 <div class="info-card-icon">✈️</div>
                                 <h4>Getting Here</h4>
-                                <p>Fly into Indira Gandhi International Airport (DEL), 20 minutes from the venue. Book early for the best fares.</p>
+                                <p>Fly into Pune International Airport (PNQ), 25 minutes from the venue. Direct flights from all major cities.</p>
                                 <span class="info-note">Airport transfers available on request</span>
                             </div>
                             <div class="info-card">
                                 <div class="info-card-icon">🏨</div>
                                 <h4>Where to Stay</h4>
-                                <p>Room block reserved at The Leela Palace at ₹18,000/night. Mention "Sharma-Kapoor Wedding" when booking.</p>
+                                <p>Room block reserved at Taj Lakefront Pune at ₹12,000/night. Mention "Sharma-Kapoor Wedding" when booking.</p>
                                 <span class="info-note">Valid until Nov 15, 2026</span>
                             </div>
                             <div class="info-card">
@@ -464,9 +508,9 @@
                                 <div class="info-card-icon">🏛️</div>
                                 <h4>Other Hotels</h4>
                                 <ul class="hotel-list">
-                                    <li><strong>The Taj Palace</strong> — 10 min · ₹14,000/night</li>
-                                    <li><strong>ITC Maurya</strong> — 12 min · ₹12,000/night</li>
-                                    <li><strong>The Oberoi</strong> — 15 min · ₹16,000/night</li>
+                                    <li><strong>JW Marriott Pune</strong> — 10 min · ₹10,000/night</li>
+                                    <li><strong>Conrad Pune</strong> — 15 min · ₹9,500/night</li>
+                                    <li><strong>The Westin Pune</strong> — 12 min · ₹8,500/night</li>
                                 </ul>
                             </div>
                         </div>
@@ -628,13 +672,85 @@
             </div>
         </section>
 
+        <!-- Blessings Wall -->
+        <section id="blessings" class="section section-alt">
+            <div class="container">
+                <header class="sec-header anim-up">
+                    <span class="sec-tag">Wishes</span>
+                    <h2 class="sec-title">Blessings Wall</h2>
+                    <p class="sec-desc">Leave your heartfelt message for the couple</p>
+                </header>
+
+                <div class="blessings-wrap anim-up">
+                    <div class="blessings-feed" id="blessingsFeed">
+                        <div class="blessing-card">
+                            <div class="blessing-avatar">R</div>
+                            <div class="blessing-body">
+                                <strong>Rajesh & Sunita Uncle-Aunty</strong>
+                                <p>May your life together be filled with endless love, laughter, and prosperity. Wishing you both a lifetime of happiness! 🙏</p>
+                                <span class="blessing-time">2 days ago</span>
+                            </div>
+                        </div>
+                        <div class="blessing-card">
+                            <div class="blessing-avatar">A</div>
+                            <div class="blessing-body">
+                                <strong>Ananya Deshpande</strong>
+                                <p>So happy for you two! Can't wait to dance at the sangeet. Love you both endlessly!</p>
+                                <span class="blessing-time">5 days ago</span>
+                            </div>
+                        </div>
+                        <div class="blessing-card">
+                            <div class="blessing-avatar">K</div>
+                            <div class="blessing-body">
+                                <strong>Kiran Kulkarni</strong>
+                                <p>सुखी संसाराच्या शुभेच्छा! May Ganpati Bappa bless your journey together.</p>
+                                <span class="blessing-time">1 week ago</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form class="blessing-form" id="blessingForm">
+                        <div class="blessing-form-row">
+                            <input type="text" id="bless-name" placeholder="Your name" required>
+                            <textarea id="bless-msg" placeholder="Write your blessing..." rows="2" required></textarea>
+                        </div>
+                        <button type="submit" class="blessing-submit">
+                            Send Blessing
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
     </main>
+
+    <!-- Music Player (Floating) -->
+    <div class="music-player" id="musicPlayer">
+        <button class="music-toggle" id="musicToggle" aria-label="Toggle music">
+            <svg class="music-icon-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18V5l12 7-12 7z"/></svg>
+            <svg class="music-icon-pause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+        </button>
+        <div class="music-info">
+            <span class="music-title">Tujh Mein Rab Dikhta Hai</span>
+            <div class="music-progress"><div class="music-progress-bar" id="musicProgress"></div></div>
+        </div>
+        <div class="music-visualizer" id="musicViz">
+            <span></span><span></span><span></span><span></span>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <span class="toast-icon">✓</span>
+        <span class="toast-msg" id="toastMsg">Action completed</span>
+    </div>
 
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-inner">
             <div class="footer-brand">A & M</div>
-            <p class="footer-tagline">December 14, 2026 · New Delhi</p>
+            <p class="footer-tagline">December 14, 2026 · Pune, Maharashtra</p>
             <p class="footer-hash">#AaravWedsMeera</p>
             <div class="footer-links">
                 <a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram">
