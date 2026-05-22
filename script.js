@@ -372,4 +372,563 @@
     `;
     document.head.appendChild(shakeStyle);
 
+    /* =========================================================
+       INVITATION ENVELOPE INTRO
+       ========================================================= */
+    const intro = document.getElementById('invitationIntro');
+    const envelope = document.getElementById('envelope');
+    const inviteStars = document.getElementById('inviteStars');
+
+    if (intro) {
+        const seenIntro = sessionStorage.getItem('sv_intro_seen');
+
+        const buildStars = () => {
+            if (!inviteStars) return;
+            const frag = document.createDocumentFragment();
+            for (let i = 0; i < 40; i++) {
+                const s = document.createElement('div');
+                s.className = 'invite-star';
+                s.style.left = Math.random() * 100 + '%';
+                s.style.top = Math.random() * 100 + '%';
+                s.style.animationDelay = Math.random() * 3 + 's';
+                s.style.opacity = (0.3 + Math.random() * 0.6).toFixed(2);
+                const size = 1 + Math.random() * 2;
+                s.style.width = size + 'px';
+                s.style.height = size + 'px';
+                frag.appendChild(s);
+            }
+            inviteStars.appendChild(frag);
+        };
+
+        const openEnvelope = () => {
+            if (intro.classList.contains('opening')) return;
+            intro.classList.add('opening');
+            if (navigator.vibrate) navigator.vibrate(30);
+            setTimeout(() => {
+                intro.classList.add('opened');
+                document.body.style.overflow = '';
+            }, 2000);
+            setTimeout(() => { intro.style.display = 'none'; }, 2700);
+        };
+
+        if (!seenIntro) {
+            document.body.style.overflow = 'hidden';
+            buildStars();
+            setTimeout(() => intro.classList.add('show'), 1300);
+            sessionStorage.setItem('sv_intro_seen', '1');
+            intro.addEventListener('click', openEnvelope);
+        } else {
+            intro.style.display = 'none';
+        }
+    }
+
+    /* =========================================================
+       3D CARD TILT
+       ========================================================= */
+    const tiltSelectors = [
+        '.tilt-card',
+        '.event-card',
+        '.story-card',
+        '.info-card',
+        '.party-member',
+        '.timeline-content',
+        '.venue-info-card'
+    ].join(',');
+
+    const isCoarse = window.matchMedia('(pointer: coarse)').matches;
+
+    document.querySelectorAll(tiltSelectors).forEach(card => {
+        let raf = null;
+
+        const handleMove = (e) => {
+            const rect = card.getBoundingClientRect();
+            const cx = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+            const cy = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+            const px = (cx / rect.width) - 0.5;
+            const py = (cy / rect.height) - 0.5;
+            const maxRot = isCoarse ? 4 : 8;
+            const rx = -py * maxRot;
+            const ry = px * maxRot;
+
+            if (raf) cancelAnimationFrame(raf);
+            raf = requestAnimationFrame(() => {
+                card.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg) translateZ(0)`;
+                card.style.setProperty('--tilt-x', (cx / rect.width * 100) + '%');
+                card.style.setProperty('--tilt-y', (cy / rect.height * 100) + '%');
+            });
+        };
+
+        const reset = () => {
+            card.classList.remove('tilting');
+            card.style.transform = '';
+        };
+
+        card.addEventListener('mouseenter', () => card.classList.add('tilting'));
+        card.addEventListener('mousemove', handleMove);
+        card.addEventListener('mouseleave', reset);
+        if (isCoarse) {
+            card.addEventListener('touchstart', () => card.classList.add('tilting'), { passive: true });
+            card.addEventListener('touchmove', handleMove, { passive: true });
+            card.addEventListener('touchend', reset);
+        }
+    });
+
+    /* =========================================================
+       EVENT DATA + ICS HELPERS
+       ========================================================= */
+    const VENUE = {
+        name: 'Samarth Lawns',
+        address: 'Samarth Lawns, Mahabal Road, Near Mehrun Lake, Jalgaon, Maharashtra 425001',
+        lat: 21.0077,
+        lng: 75.5626,
+        googleQ: 'Samarth+Lawns+Mahabal+Road+Jalgaon'
+    };
+
+    const EVENTS = {
+        engagement: {
+            title: 'Engagement (Sakharpuda) — Shubham & Vaibhavi',
+            start: '20260721T103000Z', // 4:00 PM IST = 10:30 UTC
+            end:   '20260721T133000Z',
+            desc:  'Engagement (Sakharpuda) at Samarth Lawns, Jalgaon. Festive Indian attire.'
+        },
+        haldi: {
+            title: 'Haldi — Shubham & Vaibhavi',
+            start: '20260721T130000Z', // 6:30 PM IST
+            end:   '20260721T160000Z',
+            desc:  'Haldi ceremony at Samarth Lawns, Jalgaon. Wear yellow.'
+        },
+        sangeet: {
+            title: 'Sangeet — Shubham & Vaibhavi',
+            start: '20260721T153000Z', // 9:00 PM IST
+            end:   '20260721T193000Z',
+            desc:  'Sangeet night at Samarth Lawns, Jalgaon. Cocktail / Indo-Western.'
+        },
+        wedding: {
+            title: 'Wedding (Lagna Vidhi) — Shubham & Vaibhavi',
+            start: '20260722T070000Z', // 12:30 PM IST
+            end:   '20260722T103000Z',
+            desc:  'Wedding ceremony at Samarth Lawns Main Mandap, Jalgaon. Traditional Maharashtrian.'
+        },
+        all: {
+            title: 'Shubham & Vaibhavi Wedding',
+            start: '20260721T103000Z',
+            end:   '20260722T103000Z',
+            desc:  'Two days of celebrations at Samarth Lawns, Jalgaon.'
+        }
+    };
+
+    const buildICS = (key) => {
+        const ev = EVENTS[key] || EVENTS.all;
+        const uid = `${key}-shubham-vaibhavi-2026@sv.wedding`;
+        return [
+            'BEGIN:VCALENDAR',
+            'VERSION:2.0',
+            'PRODID:-//Shubham-Vaibhavi//Wedding//EN',
+            'METHOD:PUBLISH',
+            'BEGIN:VEVENT',
+            `UID:${uid}`,
+            `DTSTAMP:${new Date().toISOString().replace(/[-:]/g,'').split('.')[0]}Z`,
+            `DTSTART:${ev.start}`,
+            `DTEND:${ev.end}`,
+            `SUMMARY:${ev.title}`,
+            `DESCRIPTION:${ev.desc}`,
+            `LOCATION:${VENUE.address}`,
+            `GEO:${VENUE.lat};${VENUE.lng}`,
+            'STATUS:CONFIRMED',
+            'BEGIN:VALARM',
+            'TRIGGER:-PT24H',
+            'ACTION:DISPLAY',
+            `DESCRIPTION:Reminder — ${ev.title}`,
+            'END:VALARM',
+            'END:VEVENT',
+            'END:VCALENDAR'
+        ].join('\r\n');
+    };
+
+    const downloadICS = (key) => {
+        const blob = new Blob([buildICS(key)], { type: 'text/calendar' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${key}-shubham-vaibhavi.ics`;
+        document.body.appendChild(a); a.click(); a.remove();
+        URL.revokeObjectURL(url);
+        if (typeof showToast === 'function') showToast('Calendar event downloaded');
+    };
+
+    // Per-event Add to Calendar
+    document.querySelectorAll('[data-event-cal]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const k = btn.getAttribute('data-event-cal');
+            downloadICS(k);
+            if (navigator.vibrate) navigator.vibrate(15);
+        });
+    });
+
+    // Per-event Get Directions
+    const openDirections = () => {
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const url = isIOS
+            ? `maps://?q=${encodeURIComponent(VENUE.name)}&ll=${VENUE.lat},${VENUE.lng}`
+            : `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(VENUE.address)}`;
+        window.open(url, '_blank');
+    };
+    document.querySelectorAll('[data-event-dir]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            openDirections();
+            if (navigator.vibrate) navigator.vibrate(15);
+        });
+    });
+
+    /* =========================================================
+       SAVE LOCATION (vCard)
+       ========================================================= */
+    const saveLocBtn = document.getElementById('saveLocationBtn');
+    if (saveLocBtn) {
+        saveLocBtn.addEventListener('click', () => {
+            const vcard = [
+                'BEGIN:VCARD',
+                'VERSION:3.0',
+                `FN:${VENUE.name} (S&V Wedding Venue)`,
+                `ADR;TYPE=WORK:;;${VENUE.address}`,
+                `GEO:${VENUE.lat};${VENUE.lng}`,
+                'TEL;TYPE=WORK,VOICE:+919922012345',
+                `URL:https://www.google.com/maps/?q=${VENUE.googleQ}`,
+                'NOTE:Wedding venue for Shubham & Vaibhavi — 22 July 2026',
+                'END:VCARD'
+            ].join('\r\n');
+            const blob = new Blob([vcard], { type: 'text/vcard' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'samarth-lawns-jalgaon.vcf';
+            document.body.appendChild(a); a.click(); a.remove();
+            URL.revokeObjectURL(url);
+            if (typeof showToast === 'function') showToast('Location saved to contacts');
+            if (navigator.vibrate) navigator.vibrate(20);
+        });
+    }
+
+    /* =========================================================
+       CONCIERGE TABS
+       ========================================================= */
+    document.querySelectorAll('.ctab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const k = btn.getAttribute('data-ctab');
+            document.querySelectorAll('.ctab-btn').forEach(b => b.classList.toggle('active', b === btn));
+            document.querySelectorAll('.ctab-panel').forEach(p => {
+                p.classList.toggle('active', p.id === `ctab-${k}`);
+            });
+            if (navigator.vibrate) navigator.vibrate(8);
+        });
+    });
+
+    /* =========================================================
+       STAY ALLOCATION LOOKUP
+       ========================================================= */
+    const STAYS = {
+        'rajesh patil':    { hotel: 'Hotel Royal Palace',  room: '204', checkin: '20 Jul 2026', checkout: '23 Jul 2026', notes: 'Premium Deluxe · Lake-view' },
+        'sunita patil':    { hotel: 'Hotel Royal Palace',  room: '204', checkin: '20 Jul 2026', checkout: '23 Jul 2026', notes: 'Premium Deluxe · Lake-view' },
+        'ananya deshpande':{ hotel: 'Hotel Sai Plaza',     room: '312', checkin: '21 Jul 2026', checkout: '23 Jul 2026', notes: 'Twin sharing' },
+        'kiran kulkarni':  { hotel: 'The President Park',  room: '105', checkin: '20 Jul 2026', checkout: '23 Jul 2026', notes: 'Family suite' },
+        'rohan sharma':    { hotel: 'Hotel Royal Palace',  room: '210', checkin: '20 Jul 2026', checkout: '23 Jul 2026', notes: 'Groom\'s Best Man · King room' },
+        'vikram mehta':    { hotel: 'Hotel Royal Palace',  room: '211', checkin: '21 Jul 2026', checkout: '23 Jul 2026', notes: 'Groomsman · Deluxe' },
+        'arjun patel':     { hotel: 'Hotel Royal Palace',  room: '212', checkin: '21 Jul 2026', checkout: '23 Jul 2026', notes: 'Groomsman · Deluxe' },
+        'priya kapoor':    { hotel: 'Hotel Sai Plaza',     room: '301', checkin: '20 Jul 2026', checkout: '23 Jul 2026', notes: 'Maid of Honor · Suite' },
+        'nisha reddy':     { hotel: 'Hotel Sai Plaza',     room: '302', checkin: '21 Jul 2026', checkout: '23 Jul 2026', notes: 'Bridesmaid · Deluxe' },
+        'sneha gupta':     { hotel: 'Hotel Sai Plaza',     room: '303', checkin: '21 Jul 2026', checkout: '23 Jul 2026', notes: 'Bridesmaid · Deluxe' },
+        'demo guest':      { hotel: 'Hotel Royal Palace',  room: '108', checkin: '20 Jul 2026', checkout: '23 Jul 2026', notes: 'Standard · Twin sharing (demo entry)' }
+    };
+
+    const HOTELS = {
+        'Hotel Royal Palace': { addr: 'Hotel Royal Palace, Station Road, Jalgaon 425001', phone: '+912572220500' },
+        'Hotel Sai Plaza':    { addr: 'Hotel Sai Plaza, Mahabal Road, Jalgaon 425001',    phone: '+912572221122' },
+        'The President Park': { addr: 'The President Park, Ring Road, Jalgaon 425001',    phone: '+912572233344' }
+    };
+
+    const stayInput = document.getElementById('stayLookupInput');
+    const stayBtn = document.getElementById('stayLookupBtn');
+    const stayResult = document.getElementById('stayResult');
+
+    const renderStay = (q) => {
+        if (!stayResult) return;
+        stayResult.hidden = false;
+        stayResult.className = 'stay-result';
+        const key = q.trim().toLowerCase();
+        const data = STAYS[key];
+        if (data) {
+            const hotelInfo = HOTELS[data.hotel] || {};
+            stayResult.classList.add('success');
+            stayResult.innerHTML = `
+                <h4>Welcome, ${q.split(' ').map(w => w[0].toUpperCase()+w.slice(1)).join(' ')} 🌸</h4>
+                <div class="stay-row"><span>Hotel</span><span>${data.hotel}</span></div>
+                <div class="stay-row"><span>Room</span><span>${data.room}</span></div>
+                <div class="stay-row"><span>Check-in</span><span>${data.checkin}</span></div>
+                <div class="stay-row"><span>Check-out</span><span>${data.checkout}</span></div>
+                <div class="stay-row"><span>Notes</span><span>${data.notes}</span></div>
+                <div class="stay-result-actions">
+                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hotelInfo.addr || data.hotel)}" target="_blank" rel="noopener" class="primary">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        Hotel Directions
+                    </a>
+                    <a href="tel:${hotelInfo.phone || ''}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 5a2 2 0 012-2h2.7a1 1 0 011 .76l1 4a1 1 0 01-.27 1L8 10.3a14 14 0 005.7 5.7l1.6-1.4a1 1 0 011-.27l4 1a1 1 0 01.76 1V19a2 2 0 01-2 2C9 21 3 15 3 5z"/></svg>
+                        Call Hotel
+                    </a>
+                </div>`;
+        } else {
+            stayResult.classList.add('fail');
+            stayResult.innerHTML = `
+                <h4>Hmm, we couldn't find that name</h4>
+                <p style="font-size:0.85rem;color:var(--c-text-secondary);line-height:1.6;">Double-check the spelling, or chat with our hospitality team on WhatsApp — they'll sort it out in a minute.</p>`;
+        }
+    };
+
+    if (stayBtn && stayInput) {
+        stayBtn.addEventListener('click', () => {
+            if (!stayInput.value.trim()) {
+                stayInput.focus();
+                stayInput.parentElement.style.animation = 'shake 0.4s ease';
+                setTimeout(() => stayInput.parentElement.style.animation = '', 500);
+                return;
+            }
+            renderStay(stayInput.value);
+            if (navigator.vibrate) navigator.vibrate(15);
+        });
+        stayInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); stayBtn.click(); }
+        });
+    }
+
+    /* =========================================================
+       PICKUP FORM → WHATSAPP
+       ========================================================= */
+    const pickupForm = document.getElementById('pickupForm');
+    if (pickupForm) {
+        pickupForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const fd = new FormData(pickupForm);
+            const name = fd.get('name');
+            const phone = fd.get('phone');
+            const mode = fd.get('mode');
+            const flight = fd.get('flight') || '—';
+            const date = fd.get('date');
+            const time = fd.get('time');
+            const pax = fd.get('pax');
+            const luggage = fd.get('luggage');
+            const notes = fd.get('notes') || '—';
+
+            const msg = `🚖 *Pickup Request — Shubham & Vaibhavi Wedding*
+
+*Guest:* ${name}
+*Phone:* ${phone}
+*Arrival:* ${date} at ${time}
+*Mode:* ${mode}
+*Flight/Train:* ${flight}
+*Passengers:* ${pax}
+*Luggage:* ${luggage}
+*Notes:* ${notes}
+
+Sent via the wedding website. Please confirm the pickup. Thank you 🙏`;
+
+            const wa = `https://wa.me/919922012346?text=${encodeURIComponent(msg)}`;
+            window.open(wa, '_blank');
+            if (navigator.vibrate) navigator.vibrate(25);
+            if (typeof showToast === 'function') showToast('Opening WhatsApp…');
+        });
+    }
+
+    /* =========================================================
+       DOWNLOAD PDF INVITE (jsPDF)
+       ========================================================= */
+    const dlBtn = document.getElementById('downloadInviteBtn');
+    if (dlBtn) {
+        dlBtn.addEventListener('click', () => {
+            if (!window.jspdf) {
+                if (typeof showToast === 'function') showToast('PDF library still loading, try again');
+                return;
+            }
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ unit: 'mm', format: [148, 210] }); // A5 portrait
+
+            const W = 148, H = 210;
+            const accent = [193, 68, 14];
+            const gold = [212, 175, 55];
+            const dark = [45, 24, 16];
+
+            // Background
+            doc.setFillColor(245, 233, 200);
+            doc.rect(0, 0, W, H, 'F');
+
+            // Outer gold border
+            doc.setDrawColor(...gold);
+            doc.setLineWidth(0.6);
+            doc.rect(8, 8, W - 16, H - 16);
+            doc.setLineWidth(0.2);
+            doc.rect(10, 10, W - 20, H - 20);
+
+            // Ornament top
+            doc.setTextColor(...accent);
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(18);
+            doc.text('۞', W/2, 22, { align: 'center' });
+
+            // Blessing
+            doc.setFontSize(9);
+            doc.setTextColor(...accent);
+            doc.text('|| Shree Ganeshay Namah ||', W/2, 30, { align: 'center' });
+
+            // Intro
+            doc.setFont('times', 'italic');
+            doc.setFontSize(11);
+            doc.setTextColor(90, 58, 32);
+            doc.text('With the blessings of our families,', W/2, 50, { align: 'center' });
+            doc.text('we joyfully invite you to celebrate the union of', W/2, 57, { align: 'center' });
+
+            // Names
+            doc.setFont('times', 'normal');
+            doc.setFontSize(32);
+            doc.setTextColor(...accent);
+            doc.text('Shubham', W/2, 80, { align: 'center' });
+            doc.setFontSize(18);
+            doc.setTextColor(...gold);
+            doc.setFont('times', 'italic');
+            doc.text('&', W/2, 92, { align: 'center' });
+            doc.setFont('times', 'normal');
+            doc.setFontSize(32);
+            doc.setTextColor(...accent);
+            doc.text('Vaibhavi', W/2, 106, { align: 'center' });
+
+            // Divider
+            doc.setDrawColor(...gold);
+            doc.setLineWidth(0.4);
+            doc.line(W/2 - 30, 116, W/2 - 6, 116);
+            doc.line(W/2 + 6, 116, W/2 + 30, 116);
+            doc.setFontSize(10);
+            doc.setTextColor(...gold);
+            doc.text('۞', W/2, 118, { align: 'center' });
+
+            // Date
+            doc.setFont('times', 'normal');
+            doc.setFontSize(18);
+            doc.setTextColor(...dark);
+            doc.text('Wednesday, 22 July 2026', W/2, 132, { align: 'center' });
+            doc.setFontSize(11);
+            doc.setTextColor(90, 58, 32);
+            doc.text('Muhurat at 12:30 PM', W/2, 140, { align: 'center' });
+
+            // Venue
+            doc.setFontSize(13);
+            doc.setTextColor(...dark);
+            doc.setFont('times', 'italic');
+            doc.text('Samarth Lawns', W/2, 155, { align: 'center' });
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9);
+            doc.setTextColor(90, 58, 32);
+            doc.text('Mahabal Road, Near Mehrun Lake', W/2, 161, { align: 'center' });
+            doc.text('Jalgaon, Maharashtra 425001', W/2, 166, { align: 'center' });
+
+            // Events list
+            doc.setFontSize(8);
+            doc.setTextColor(120, 80, 40);
+            doc.text('21 Jul · Engagement 4:00 PM  ·  Haldi 6:30 PM  ·  Sangeet 9:00 PM', W/2, 178, { align: 'center' });
+            doc.text('22 Jul · Wedding Ceremony (Lagna Vidhi) 12:30 PM', W/2, 183, { align: 'center' });
+
+            // Hashtag
+            doc.setFont('helvetica', 'italic');
+            doc.setFontSize(8);
+            doc.setTextColor(...accent);
+            doc.text('#ShubhamWedsVaibhavi', W/2, 196, { align: 'center' });
+
+            doc.save('Shubham-Vaibhavi-Invitation.pdf');
+            if (typeof showToast === 'function') showToast('Invitation downloaded');
+            if (navigator.vibrate) navigator.vibrate(25);
+        });
+    }
+
+    /* =========================================================
+       LIVE STREAM ACTIONS
+       ========================================================= */
+    const lsPlay = document.getElementById('livestreamPlay');
+    if (lsPlay) {
+        lsPlay.addEventListener('click', () => {
+            const now = new Date();
+            const eventStart = new Date('2026-07-22T06:30:00Z'); // noon-ish IST
+            const eventEnd   = new Date('2026-07-22T17:00:00Z');
+            if (now >= eventStart && now <= eventEnd) {
+                window.open('https://youtube.com/live/shubhamWedsVaibhavi', '_blank');
+            } else {
+                if (typeof showToast === 'function') showToast('Stream goes live on 22 July, 12:00 PM IST');
+            }
+            if (navigator.vibrate) navigator.vibrate(20);
+        });
+    }
+    const lsBadge = document.getElementById('livestreamBadge');
+    (function updateLsBadge(){
+        if (!lsBadge) return;
+        const now = new Date();
+        const eventStart = new Date('2026-07-22T06:30:00Z');
+        const eventEnd   = new Date('2026-07-22T17:00:00Z');
+        if (now >= eventStart && now <= eventEnd) {
+            lsBadge.classList.add('live');
+            lsBadge.innerHTML = '<span class="pulse-dot"></span> LIVE NOW · Tap to Watch';
+        }
+    })();
+    const lsRemind = document.getElementById('livestreamRemindBtn');
+    if (lsRemind) {
+        lsRemind.addEventListener('click', () => {
+            downloadICS('wedding');
+            if (typeof showToast === 'function') showToast('Reminder added to calendar');
+        });
+    }
+
+    /* =========================================================
+       WHATSAPP FAB
+       ========================================================= */
+    const waFab = document.getElementById('waFab');
+    const waTrigger = document.getElementById('waFabTrigger');
+    if (waFab && waTrigger) {
+        const backdrop = document.createElement('div');
+        backdrop.className = 'wa-fab-backdrop';
+        document.body.appendChild(backdrop);
+
+        const toggleFab = (open) => {
+            const state = open ?? !waFab.classList.contains('open');
+            waFab.classList.toggle('open', state);
+            backdrop.classList.toggle('show', state);
+            if (navigator.vibrate) navigator.vibrate(state ? 12 : 8);
+        };
+
+        waTrigger.addEventListener('click', (e) => { e.stopPropagation(); toggleFab(); });
+        backdrop.addEventListener('click', () => toggleFab(false));
+
+        document.querySelectorAll('.wa-action').forEach(a => {
+            a.addEventListener('click', () => {
+                const k = a.getAttribute('data-wa');
+                const inviteUrl = window.location.href.split('#')[0];
+                let url = '';
+                if (k === 'rsvp') {
+                    const msg = `Hi! I'd like to RSVP for Shubham & Vaibhavi's wedding on 22 July 2026.%0A%0AName:%20%0AGuests:%20%0AAttending:%20`;
+                    url = `https://wa.me/919922012345?text=${msg}`;
+                } else if (k === 'directions') {
+                    openDirections();
+                    toggleFab(false);
+                    return;
+                } else if (k === 'family') {
+                    // Open contact options — scroll to contacts and open contacts tab
+                    document.querySelectorAll('.ctab-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-ctab') === 'contacts'));
+                    document.querySelectorAll('.ctab-panel').forEach(p => p.classList.toggle('active', p.id === 'ctab-contacts'));
+                    document.getElementById('concierge')?.scrollIntoView({ behavior: 'smooth' });
+                    toggleFab(false);
+                    return;
+                } else if (k === 'share') {
+                    const msg = `Shubham & Vaibhavi are getting married! 💍%0A22 July 2026 · Samarth Lawns, Jalgaon%0A%0AView the invitation: ${encodeURIComponent(inviteUrl)}`;
+                    url = `https://wa.me/?text=${msg}`;
+                }
+                if (url) window.open(url, '_blank');
+                toggleFab(false);
+            });
+        });
+    }
+
 })();
