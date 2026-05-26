@@ -147,7 +147,8 @@
 
     <!-- Switcher -->
     <div class="ht-panel" role="tablist" aria-label="Choose hero background">
-        <button class="ht-btn" data-opt="1" role="tab">1 · Namaste</button>
+        <button class="ht-btn" data-opt="H" role="tab" style="background:linear-gradient(135deg,#c1440e,#e86c24);color:#fff;border-color:rgba(212,175,55,0.6);">★ Heritage</button>
+        <button class="ht-btn" data-opt="1" role="tab">1 · Namaste (raw)</button>
         <button class="ht-btn" data-opt="2" role="tab">2 · Tunnel</button>
         <button class="ht-btn" data-opt="3" role="tab">3 · Forest</button>
         <button class="ht-btn" data-opt="4" role="tab">4 · Smoke Arch</button>
@@ -205,15 +206,16 @@
 
     <script>
         const OPTIONS = {
-            '1': { slug: 'hero-opt1-namaste',  name: 'Option 1 · Couple Namaste',  note: 'Maharashtrian feel · visible iStock watermark on the right' },
+            'H': { slug: 'hero-heritage',      name: '★ Heritage · Couple Namaste (cleaned)', note: 'Watermark removed + cinematic composite · recommended' },
+            '1': { slug: 'hero-opt1-namaste',  name: 'Option 1 · Couple Namaste (raw)',  note: 'Original iStock with watermark visible' },
             '2': { slug: 'hero-opt2-tunnel',   name: 'Option 2 · Purple Mandap Tunnel', note: 'Dark and dramatic · text reads excellently' },
             '3': { slug: 'hero-opt3-forest',   name: 'Option 3 · Sunlit Forest Couple', note: 'Bright daylight · stronger scrim auto-applied' },
-            '4': { slug: 'hero-opt4-arch',     name: 'Option 4 · Flower Arch · Smoke Sky', note: 'Cinematic · best text canvas of the six' },
+            '4': { slug: 'hero-opt4-arch',     name: 'Option 4 · Flower Arch · Smoke Sky', note: 'Cinematic atmospheric · couple distant' },
             '5': { slug: 'hero-opt5-mandap',   name: 'Option 5 · Daytime Pink Mandap', note: 'Bright sky · strongest scrim auto-applied' },
             '6': { slug: 'hero-opt6-bokeh',    name: 'Option 6 · Bride Bokeh Entry', note: 'Atmospheric · bride centred on the right' }
         };
         const params = new URLSearchParams(location.search);
-        const initial = params.get('opt') || localStorage.getItem('sv_hero_opt') || '4';
+        const initial = params.get('opt') || localStorage.getItem('sv_hero_opt') || 'H';
 
         const heroSrc = document.getElementById('heroSrc');
         const heroImg = document.getElementById('heroImg');
