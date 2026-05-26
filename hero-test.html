@@ -24,17 +24,48 @@
             transform: translateX(-50%);
             z-index: 200;
             display: flex;
+            flex-direction: column;
             gap: 0.4rem;
-            padding: 0.5rem 0.6rem;
-            background: rgba(8, 5, 3, 0.85);
+            padding: 0.6rem 0.8rem;
+            background: rgba(8, 5, 3, 0.88);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(212,175,55,0.30);
-            border-radius: 999px;
+            border-radius: 18px;
             box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            max-width: calc(100vw - 24px);
+            max-height: calc(100vh - 24px);
+            overflow-y: auto;
+        }
+        .ht-group {
+            display: flex;
+            gap: 0.4rem;
             flex-wrap: wrap;
             justify-content: center;
-            max-width: calc(100vw - 24px);
+            align-items: center;
+            padding: 0.25rem 0;
+        }
+        .ht-group + .ht-group { border-top: 1px solid rgba(255,255,255,0.06); padding-top: 0.5rem; }
+        .ht-group-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: rgba(245,217,166,0.65);
+            padding: 0 0.4rem;
+            white-space: nowrap;
+        }
+        .ht-fresh {
+            background: rgba(245,217,166,0.08) !important;
+            border-color: rgba(245,217,166,0.22) !important;
+            color: #f5d9a6 !important;
+        }
+        .ht-fresh:hover { background: rgba(245,217,166,0.18) !important; }
+        .ht-fresh.active {
+            background: linear-gradient(135deg, #c1440e, #e86c24) !important;
+            border-color: rgba(212,175,55,0.7) !important;
+            color: #fff !important;
         }
         .ht-btn {
             padding: 0.45rem 0.85rem;
@@ -58,11 +89,11 @@
         }
         .ht-label {
             position: fixed;
-            top: 64px;
+            bottom: 78px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 200;
-            padding: 0.5rem 1.2rem;
+            padding: 0.55rem 1.4rem;
             background: rgba(8, 5, 3, 0.85);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
@@ -70,7 +101,7 @@
             border-radius: 999px;
             color: #f5d9a6;
             font-family: 'Playfair Display', serif;
-            font-size: 0.92rem;
+            font-size: 1rem;
             text-align: center;
             box-shadow: 0 8px 24px rgba(0,0,0,0.4);
             max-width: calc(100vw - 24px);
@@ -147,13 +178,29 @@
 
     <!-- Switcher -->
     <div class="ht-panel" role="tablist" aria-label="Choose hero background">
-        <button class="ht-btn" data-opt="H" role="tab" style="background:linear-gradient(135deg,#c1440e,#e86c24);color:#fff;border-color:rgba(212,175,55,0.6);">★ Heritage</button>
-        <button class="ht-btn" data-opt="1" role="tab">1 · Namaste (raw)</button>
-        <button class="ht-btn" data-opt="2" role="tab">2 · Tunnel</button>
-        <button class="ht-btn" data-opt="3" role="tab">3 · Forest</button>
-        <button class="ht-btn" data-opt="4" role="tab">4 · Smoke Arch</button>
-        <button class="ht-btn" data-opt="5" role="tab">5 · Day Mandap</button>
-        <button class="ht-btn" data-opt="6" role="tab">6 · Bokeh</button>
+        <div class="ht-group">
+            <span class="ht-group-label">NEW · choose one of 10</span>
+            <button class="ht-btn ht-fresh" data-opt="P1"  role="tab">1 · Couple · Hindu</button>
+            <button class="ht-btn ht-fresh" data-opt="P2"  role="tab">2 · Varmala</button>
+            <button class="ht-btn ht-fresh" data-opt="P3"  role="tab">3 · Newlyweds · Garland</button>
+            <button class="ht-btn ht-fresh" data-opt="P4"  role="tab">4 · Bride · Ornate</button>
+            <button class="ht-btn ht-fresh" data-opt="P5"  role="tab">5 · Bride · Soft</button>
+            <button class="ht-btn ht-fresh" data-opt="P6"  role="tab">6 · Maharashtra Mandap</button>
+            <button class="ht-btn ht-fresh" data-opt="P7"  role="tab">7 · Floral Stage</button>
+            <button class="ht-btn ht-fresh" data-opt="P8"  role="tab">8 · Groom · Turban</button>
+            <button class="ht-btn ht-fresh" data-opt="P9"  role="tab">9 · Bride · Pink</button>
+            <button class="ht-btn ht-fresh" data-opt="P10" role="tab">10 · Outdoor Elegant</button>
+        </div>
+        <div class="ht-group">
+            <span class="ht-group-label">Previous round</span>
+            <button class="ht-btn" data-opt="H" role="tab" style="background:linear-gradient(135deg,#c1440e,#e86c24);color:#fff;border-color:rgba(212,175,55,0.6);">★ Heritage</button>
+            <button class="ht-btn" data-opt="1" role="tab">A · Namaste (raw)</button>
+            <button class="ht-btn" data-opt="2" role="tab">B · Tunnel</button>
+            <button class="ht-btn" data-opt="3" role="tab">C · Forest</button>
+            <button class="ht-btn" data-opt="4" role="tab">D · Smoke Arch</button>
+            <button class="ht-btn" data-opt="5" role="tab">E · Day Mandap</button>
+            <button class="ht-btn" data-opt="6" role="tab">F · Bokeh</button>
+        </div>
     </div>
     <div class="ht-label" id="htLabel">
         Loading…
@@ -206,16 +253,28 @@
 
     <script>
         const OPTIONS = {
-            'H': { slug: 'hero-heritage',      name: '★ Heritage · Couple Namaste (cleaned)', note: 'Watermark removed + cinematic composite · recommended' },
-            '1': { slug: 'hero-opt1-namaste',  name: 'Option 1 · Couple Namaste (raw)',  note: 'Original iStock with watermark visible' },
-            '2': { slug: 'hero-opt2-tunnel',   name: 'Option 2 · Purple Mandap Tunnel', note: 'Dark and dramatic · text reads excellently' },
-            '3': { slug: 'hero-opt3-forest',   name: 'Option 3 · Sunlit Forest Couple', note: 'Bright daylight · stronger scrim auto-applied' },
-            '4': { slug: 'hero-opt4-arch',     name: 'Option 4 · Flower Arch · Smoke Sky', note: 'Cinematic atmospheric · couple distant' },
-            '5': { slug: 'hero-opt5-mandap',   name: 'Option 5 · Daytime Pink Mandap', note: 'Bright sky · strongest scrim auto-applied' },
-            '6': { slug: 'hero-opt6-bokeh',    name: 'Option 6 · Bride Bokeh Entry', note: 'Atmospheric · bride centred on the right' }
+            // === Fresh round: 10 newly-fetched candidates ===
+            'P1':  { slug: 'hero-pick1',  name: '1 · Couple · Hindu Ceremony',     note: 'Bride + groom · candid flower-petal toss' },
+            'P2':  { slug: 'hero-pick2',  name: '2 · Varmala Exchange',            note: 'Maharashtrian style · garlands mid-toss' },
+            'P3':  { slug: 'hero-pick3',  name: '3 · Newlyweds · Garland Portrait', note: 'Couple pinned right · blurred extension left' },
+            'P4':  { slug: 'hero-pick4',  name: '4 · Bride · Ornate Gold',         note: 'Rich crimson palette · dramatic close-up' },
+            'P5':  { slug: 'hero-pick5',  name: '5 · Bride · Soft Makeup',         note: 'Warm tones · serene downcast portrait' },
+            'P6':  { slug: 'hero-pick6',  name: '6 · Maharashtra Mandap',          note: 'Mumbai venue · bamboo arches at twilight' },
+            'P7':  { slug: 'hero-pick7',  name: '7 · Floral Stage',                note: 'Cinematic stage · red & gold florals' },
+            'P8':  { slug: 'hero-pick8',  name: '8 · Groom · Turban & Pearl',      note: 'Ivory sherwani · regal · jewelry detail' },
+            'P9':  { slug: 'hero-pick9',  name: '9 · Bride · Pink Lehenga',        note: 'Kolkata · royal lehenga · soft profile' },
+            'P10': { slug: 'hero-pick10', name: '10 · Outdoor Elegant',            note: 'Misty morning mandap · destination wedding' },
+            // === Previous round ===
+            'H': { slug: 'hero-heritage',      name: '★ Heritage · Couple Namaste (cleaned)', note: 'Currently live on the homepage' },
+            '1': { slug: 'hero-opt1-namaste',  name: 'A · Couple Namaste (raw)',  note: 'Original iStock with watermark visible' },
+            '2': { slug: 'hero-opt2-tunnel',   name: 'B · Purple Mandap Tunnel',  note: 'Dark and dramatic · text reads excellently' },
+            '3': { slug: 'hero-opt3-forest',   name: 'C · Sunlit Forest Couple',  note: 'Bright daylight · stronger scrim auto-applied' },
+            '4': { slug: 'hero-opt4-arch',     name: 'D · Flower Arch · Smoke Sky', note: 'Cinematic atmospheric · couple distant' },
+            '5': { slug: 'hero-opt5-mandap',   name: 'E · Daytime Pink Mandap',   note: 'Bright sky · strongest scrim auto-applied' },
+            '6': { slug: 'hero-opt6-bokeh',    name: 'F · Bride Bokeh Entry',     note: 'Atmospheric · bride centred on the right' }
         };
         const params = new URLSearchParams(location.search);
-        const initial = params.get('opt') || localStorage.getItem('sv_hero_opt') || 'H';
+        const initial = params.get('opt') || localStorage.getItem('sv_hero_opt') || 'P3';
 
         const heroSrc = document.getElementById('heroSrc');
         const heroImg = document.getElementById('heroImg');

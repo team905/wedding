@@ -3,6 +3,6 @@
 .gitignore
 .DS_Store
 node_modules/
-preview/
+preview/sources/
 *.md
 .surgeignore

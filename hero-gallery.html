@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hero Options · Pick Your Favourite — S&V Wedding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+        background: #0a0807;
+        color: #f5e9d2;
+        font-family: 'Inter', sans-serif;
+        min-height: 100vh;
+        padding: 28px 16px 80px;
+    }
+    .hg-head {
+        max-width: 1180px;
+        margin: 0 auto 28px;
+        text-align: center;
+    }
+    .hg-head h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(1.6rem, 3.4vw, 2.4rem);
+        font-weight: 500;
+        color: #f5d9a6;
+        letter-spacing: 0.02em;
+    }
+    .hg-head h1 small {
+        display: block;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.78rem;
+        font-weight: 500;
+        letter-spacing: 0.18em;
+        color: rgba(245,217,166,0.6);
+        text-transform: uppercase;
+        margin-bottom: 0.6rem;
+    }
+    .hg-head p {
+        margin-top: 0.7rem;
+        color: rgba(255,255,255,0.7);
+        font-size: 0.94rem;
+        line-height: 1.6;
+    }
+    .hg-toggle {
+        display: inline-flex;
+        margin-top: 1.2rem;
+        padding: 4px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(212,175,55,0.25);
+        border-radius: 999px;
+    }
+    .hg-toggle button {
+        padding: 0.55rem 1.2rem;
+        background: transparent;
+        border: none;
+        color: rgba(245,217,166,0.7);
+        font-family: 'Inter', sans-serif;
+        font-size: 0.84rem;
+        font-weight: 600;
+        cursor: pointer;
+        border-radius: 999px;
+        transition: all 0.18s;
+    }
+    .hg-toggle button.active {
+        background: linear-gradient(135deg, #c1440e, #e86c24);
+        color: #fff;
+        box-shadow: 0 4px 14px rgba(193,68,14,0.45);
+    }
+
+    .hg-grid {
+        max-width: 1180px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 22px;
+    }
+    @media (max-width: 720px) {
+        .hg-grid { grid-template-columns: 1fr; }
+    }
+    .hg-card {
+        position: relative;
+        background: rgba(20,15,12,0.6);
+        border: 1px solid rgba(212,175,55,0.18);
+        border-radius: 16px;
+        overflow: hidden;
+        transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s;
+    }
+    .hg-card:hover {
+        transform: translateY(-3px);
+        border-color: rgba(212,175,55,0.5);
+        box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+    }
+    .hg-img-wrap {
+        position: relative;
+        background: #050403;
+        line-height: 0;
+    }
+    .hg-img-wrap img {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+    .hg-meta {
+        padding: 14px 18px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+    }
+    .hg-meta h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.05rem;
+        font-weight: 500;
+        color: #f5d9a6;
+        line-height: 1.3;
+    }
+    .hg-meta h3 small {
+        display: block;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.74rem;
+        font-weight: 400;
+        color: rgba(255,255,255,0.55);
+        margin-top: 0.2rem;
+    }
+    .hg-use {
+        flex-shrink: 0;
+        padding: 0.5rem 0.9rem;
+        background: rgba(245,217,166,0.1);
+        border: 1px solid rgba(245,217,166,0.4);
+        color: #f5d9a6;
+        border-radius: 999px;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.78rem;
+        font-weight: 600;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: all 0.15s;
+    }
+    .hg-use:hover {
+        background: linear-gradient(135deg, #c1440e, #e86c24);
+        border-color: rgba(212,175,55,0.6);
+        color: #fff;
+    }
+    .hg-badge {
+        position: absolute;
+        top: 14px;
+        left: 14px;
+        padding: 0.35rem 0.7rem;
+        background: rgba(8,5,3,0.85);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(212,175,55,0.4);
+        border-radius: 999px;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        color: #f5d9a6;
+        z-index: 2;
+    }
+
+    .hg-foot {
+        max-width: 1180px;
+        margin: 38px auto 0;
+        text-align: center;
+        color: rgba(255,255,255,0.45);
+        font-size: 0.78rem;
+    }
+    .hg-foot a {
+        color: rgba(245,217,166,0.8);
+        text-decoration: none;
+        border-bottom: 1px dashed rgba(245,217,166,0.4);
+    }
+</style>
+</head>
+<body>
+
+<div class="hg-head">
+    <h1><small>Hero Options · Round 2</small> Pick your favourite</h1>
+    <p>10 freshly fetched, royalty-free Indian wedding photographs · enhanced, composited and overlaid with your welcome text · adaptive scrim per image guarantees legibility.</p>
+    <div class="hg-toggle" role="tablist">
+        <button data-view="desktop" class="active">Desktop view</button>
+        <button data-view="mobile">Mobile view</button>
+    </div>
+</div>
+
+<div class="hg-grid" id="grid">
+    <!-- cards injected by JS -->
+</div>
+
+<div class="hg-foot">
+    Want the side-by-side interactive switcher instead?
+    <a href="hero-test.html">Open Hero Test page →</a>
+</div>
+
+<script>
+    const PICKS = [
+        { i: 1,  title: 'Couple · Hindu Ceremony',     note: 'Candid flower-petal toss' },
+        { i: 2,  title: 'Varmala Exchange',            note: 'Maharashtrian · garlands mid-toss' },
+        { i: 3,  title: 'Newlyweds · Garland Portrait', note: 'Cinematic · couple pinned right' },
+        { i: 4,  title: 'Bride · Ornate Gold',         note: 'Rich crimson · dramatic close-up' },
+        { i: 5,  title: 'Bride · Soft Makeup',         note: 'Warm tones · serene portrait' },
+        { i: 6,  title: 'Maharashtra Mandap',          note: 'Mumbai venue · bamboo arches' },
+        { i: 7,  title: 'Floral Stage',                note: 'Red & gold · stage cinematic' },
+        { i: 8,  title: 'Groom · Turban & Pearl',      note: 'Ivory sherwani · regal' },
+        { i: 9,  title: 'Bride · Pink Lehenga',        note: 'Soft profile · Kolkata' },
+        { i: 10, title: 'Outdoor Elegant',             note: 'Misty mandap · destination' }
+    ];
+
+    const grid = document.getElementById('grid');
+    const toggle = document.querySelectorAll('.hg-toggle button');
+    let view = 'desktop';
+
+    function render() {
+        grid.innerHTML = PICKS.map(p => `
+            <div class="hg-card">
+                <div class="hg-badge">Option ${p.i}</div>
+                <div class="hg-img-wrap">
+                    <img src="preview/pick${p.i}-${view}.jpg" alt="${p.title}" loading="lazy">
+                </div>
+                <div class="hg-meta">
+                    <h3>${p.title}<small>${p.note}</small></h3>
+                    <a class="hg-use" href="hero-test.html?opt=P${p.i}">Try live →</a>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    toggle.forEach(btn => btn.addEventListener('click', () => {
+        toggle.forEach(b => b.classList.toggle('active', b === btn));
+        view = btn.dataset.view;
+        render();
+    }));
+
+    render();
+</script>
+</body>
+</html>
