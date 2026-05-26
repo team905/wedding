@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0a0a">
+    <title>Guests · S&V Wedding</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="guests.css">
+    <link rel="icon" href="/icons/favicon-64.png" type="image/png">
+</head>
+<body class="admin-body">
+
+    <!-- Lock screen (reuses admin passphrase) -->
+    <div class="lock-screen" id="lockScreen">
+        <div class="lock-card">
+            <div class="lock-emblem">S<i>&amp;</i>V</div>
+            <h1>Guest Management</h1>
+            <p>Enter the host passphrase to manage the invitation list.</p>
+            <form id="lockForm">
+                <input type="password" id="lockInput" placeholder="Passphrase" autocomplete="current-password" required>
+                <button type="submit">Unlock</button>
+            </form>
+            <p class="lock-hint">Hint: <code>baraat2026</code></p>
+        </div>
+    </div>
+
+    <!-- Main shell -->
+    <div class="admin-shell" id="adminShell" hidden>
+
+        <header class="admin-top">
+            <div class="admin-top-left">
+                <div class="admin-logo">S<i>&amp;</i>V</div>
+                <div>
+                    <strong>Guest Management</strong>
+                    <span class="admin-sub">22 July 2026 · Samarth Lawns, Jalgaon</span>
+                </div>
+            </div>
+            <div class="admin-top-right">
+                <a class="admin-link" href="admin.html">← Live Control</a>
+                <a class="admin-link" href="photographer.html">Photo Studio</a>
+                <a class="admin-link" href="index.html" target="_blank" rel="noopener">Guest Site →</a>
+                <button class="admin-link admin-link-danger" id="logoutBtn">Lock</button>
+            </div>
+        </header>
+
+        <main class="admin-main">
+
+            <!-- ==================== STATS ==================== -->
+            <section class="admin-card stats-card">
+                <header class="admin-card-head admin-card-head-flex">
+                    <div>
+                        <h2>Headcount</h2>
+                        <p>Snapshot of your invitation list.</p>
+                    </div>
+                    <span class="g-live-pill" id="syncStatus" title="Cross-device sync">
+                        <span class="live-dot"></span> Synced
+                    </span>
+                </header>
+                <div class="g-stats-grid">
+                    <div class="stat-tile">
+                        <div class="stat-label">Invited</div>
+                        <div class="stat-value" id="sInvited">0</div>
+                        <div class="stat-sub" id="sInvitedSub">families & individuals</div>
+                    </div>
+                    <div class="stat-tile">
+                        <div class="stat-label">Confirmed</div>
+                        <div class="stat-value g-stat-good" id="sConfirmed">0</div>
+                        <div class="stat-sub"><span id="sConfirmedPct">0</span>% responded yes</div>
+                    </div>
+                    <div class="stat-tile">
+                        <div class="stat-label">Declined</div>
+                        <div class="stat-value g-stat-bad" id="sDeclined">0</div>
+                        <div class="stat-sub">won't be attending</div>
+                    </div>
+                    <div class="stat-tile">
+                        <div class="stat-label">Pending reply</div>
+                        <div class="stat-value g-stat-warn" id="sPending">0</div>
+                        <div class="stat-sub">need to follow up</div>
+                    </div>
+                    <div class="stat-tile stat-tile-accent">
+                        <div class="stat-label">Total heads attending</div>
+                        <div class="stat-value" id="sHeads">0</div>
+                        <div class="stat-sub">with plus-ones counted</div>
+                    </div>
+                    <div class="stat-tile">
+                        <div class="stat-label">Stay assigned</div>
+                        <div class="stat-value" id="sStay">0</div>
+                        <div class="stat-sub" id="sStaySub">0 still need a room</div>
+                    </div>
+                    <div class="stat-tile">
+                        <div class="stat-label">Pickups scheduled</div>
+                        <div class="stat-value" id="sPickup">0</div>
+                        <div class="stat-sub" id="sPickupSub">0 requested rides</div>
+                    </div>
+                    <div class="stat-tile">
+                        <div class="stat-label">Invites sent</div>
+                        <div class="stat-value" id="sInvSent">0</div>
+                        <div class="stat-sub" id="sInvSentSub">via WhatsApp</div>
+                    </div>
+                </div>
+
+                <!-- Event-wise attendance bar -->
+                <div class="g-event-bars" id="eventBars"></div>
+            </section>
+
+            <!-- ==================== TOOLBAR ==================== -->
+            <section class="admin-card g-toolbar-card">
+                <div class="g-toolbar">
+                    <div class="g-search">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                        <input type="text" id="searchInput" placeholder="Search name, phone, relation, notes…" autocomplete="off">
+                        <button type="button" id="searchClear" hidden aria-label="Clear search">×</button>
+                    </div>
+
+                    <div class="g-filters">
+                        <select id="filterSide" aria-label="Filter by side">
+                            <option value="">All sides</option>
+                            <option value="bride">Bride side</option>
+                            <option value="groom">Groom side</option>
+                            <option value="both">Both sides</option>
+                        </select>
+                        <select id="filterRsvp" aria-label="Filter by RSVP">
+                            <option value="">Any RSVP</option>
+                            <option value="confirmed">Confirmed</option>
+                            <option value="declined">Declined</option>
+                            <option value="pending">Pending</option>
+                            <option value="maybe">Maybe</option>
+                        </select>
+                        <select id="filterEvent" aria-label="Filter by event">
+                            <option value="">Any event</option>
+                        </select>
+                        <select id="filterFlag" aria-label="Filter by flag">
+                            <option value="">All guests</option>
+                            <option value="stay">Needs stay</option>
+                            <option value="pickup">Needs pickup</option>
+                            <option value="not-invited">Invite not sent</option>
+                            <option value="has-plus">Has plus-ones</option>
+                            <option value="checked-in">Checked in</option>
+                        </select>
+                        <select id="sortBy" aria-label="Sort">
+                            <option value="name-asc">Name A–Z</option>
+                            <option value="name-desc">Name Z–A</option>
+                            <option value="updated-desc">Recently updated</option>
+                            <option value="created-desc">Recently added</option>
+                            <option value="rsvp">RSVP status</option>
+                        </select>
+                    </div>
+
+                    <div class="g-toolbar-actions">
+                        <button class="ghost-btn" id="importBtn" title="Import a CSV file">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                            Import CSV
+                        </button>
+                        <button class="ghost-btn" id="exportBtn" title="Download the full list as CSV">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 14l5-5 5 5M12 9v12"/></svg>
+                            Export CSV
+                        </button>
+                        <button class="ghost-btn" id="seedBtn" title="Add demo guests so you can see the system in action">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2v6m0 0l3-3m-3 3l-3-3M3 12l6 0m0 0l-3 3m3-3l-3-3M21 12h-6m0 0l3 3m-3-3l3-3M12 22v-6m0 0l3 3m-3-3l-3 3"/></svg>
+                            Load demo data
+                        </button>
+                        <button class="primary-btn" id="addGuestBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                            Add guest
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bulk actions strip (shown when any guest is selected) -->
+                <div class="g-bulk-bar" id="bulkBar" hidden>
+                    <span class="g-bulk-count"><b id="bulkCount">0</b> selected</span>
+                    <button type="button" data-bulk="invite-wa">Send WhatsApp invite</button>
+                    <button type="button" data-bulk="mark-confirmed">Mark confirmed</button>
+                    <button type="button" data-bulk="mark-sent">Mark invite sent</button>
+                    <button type="button" data-bulk="export">Export selected</button>
+                    <button type="button" data-bulk="delete" class="g-bulk-danger">Delete</button>
+                    <button type="button" data-bulk="clear" class="g-bulk-clear">Clear selection</button>
+                </div>
+            </section>
+
+            <!-- ==================== GUEST LIST ==================== -->
+            <section class="admin-card g-list-card">
+                <header class="admin-card-head admin-card-head-flex">
+                    <div>
+                        <h2>The list <span class="g-count-pill" id="resultCount">0</span></h2>
+                        <p id="resultSummary">All guests will appear here.</p>
+                    </div>
+                    <div class="g-view-toggle">
+                        <button type="button" data-view="cards" class="active" aria-label="Card view">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                        </button>
+                        <button type="button" data-view="table" aria-label="Table view">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+                        </button>
+                    </div>
+                </header>
+
+                <div class="g-empty" id="emptyState">
+                    <div class="g-empty-art">💌</div>
+                    <h3>Your guest list is empty</h3>
+                    <p>Add your first guest with the button above, paste in a CSV, or load the demo set to explore the system.</p>
+                    <div class="g-empty-cta">
+                        <button class="primary-btn" id="emptyAddBtn">Add first guest</button>
+                        <button class="ghost-btn"   id="emptySeedBtn">Load demo data</button>
+                    </div>
+                </div>
+
+                <div class="g-list" id="guestList"></div>
+            </section>
+
+        </main>
+
+        <!-- ==================== ADD / EDIT MODAL ==================== -->
+        <div class="g-modal" id="guestModal" hidden role="dialog" aria-modal="true" aria-labelledby="guestModalTitle">
+            <div class="g-modal-backdrop" data-close></div>
+            <div class="g-modal-shell">
+                <header class="g-modal-head">
+                    <h2 id="guestModalTitle">Add guest</h2>
+                    <button type="button" class="g-modal-close" data-close aria-label="Close">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </header>
+
+                <nav class="g-tabs" role="tablist">
+                    <button type="button" data-tab="personal" class="active" role="tab">Personal</button>
+                    <button type="button" data-tab="rsvp" role="tab">RSVP</button>
+                    <button type="button" data-tab="events" role="tab">Events</button>
+                    <button type="button" data-tab="stay" role="tab">Stay &amp; Travel</button>
+                    <button type="button" data-tab="other" role="tab">Diet &amp; Notes</button>
+                </nav>
+
+                <form id="guestForm" class="g-form">
+                    <input type="hidden" id="gfId">
+
+                    <!-- TAB: PERSONAL -->
+                    <section class="g-tab-panel active" data-panel="personal">
+                        <div class="g-form-row">
+                            <label class="grow">
+                                <span>Full name <em>*</em></span>
+                                <input type="text" id="gfName" required maxlength="80" placeholder="e.g. Rajesh Patil">
+                            </label>
+                        </div>
+                        <div class="g-form-row">
+                            <label class="grow">
+                                <span>Phone (with country code)</span>
+                                <input type="tel" id="gfPhone" placeholder="+91 98765 43210">
+                            </label>
+                            <label class="grow">
+                                <span>Email</span>
+                                <input type="email" id="gfEmail" placeholder="rajesh@example.com">
+                            </label>
+                        </div>
+                        <div class="g-form-row">
+                            <label class="grow">
+                                <span>Side</span>
+                                <div class="g-seg" data-bind="gfSide" id="gfSideSeg">
+                                    <button type="button" data-val="bride">Bride</button>
+                                    <button type="button" data-val="groom">Groom</button>
+                                    <button type="button" data-val="both">Both</button>
+                                </div>
+                                <input type="hidden" id="gfSide" value="bride">
+                            </label>
+                            <label class="grow">
+                                <span>Category</span>
+                                <div class="g-seg" data-bind="gfCategory">
+                                    <button type="button" data-val="family">Family</button>
+                                    <button type="button" data-val="friend">Friend</button>
+                                    <button type="button" data-val="colleague">Office</button>
+                                    <button type="button" data-val="neighbor">Neighbor</button>
+                                    <button type="button" data-val="other">Other</button>
+                                </div>
+                                <input type="hidden" id="gfCategory" value="family">
+                            </label>
+                        </div>
+                        <div class="g-form-row">
+                            <label class="grow">
+                                <span>Relation (optional)</span>
+                                <input type="text" id="gfRelation" placeholder="e.g. Mama (maternal uncle)" maxlength="60">
+                            </label>
+                        </div>
+                    </section>
+
+                    <!-- TAB: RSVP -->
+                    <section class="g-tab-panel" data-panel="rsvp">
+                        <div class="g-form-row">
+                            <label class="grow">
+                                <span>RSVP status</span>
+                                <div class="g-seg" data-bind="gfRsvp">
+                                    <button type="button" data-val="pending">Pending</button>
+                                    <button type="button" data-val="confirmed" class="g-seg-good">Confirmed</button>
+                                    <button type="button" data-val="declined" class="g-seg-bad">Declined</button>
+                                    <button type="button" data-val="maybe">Maybe</button>
+                                </div>
+                                <input type="hidden" id="gfRsvp" value="pending">
+                            </label>
+                        </div>
+                        <div class="g-form-row">
+                            <label>
+                                <span>Plus-ones (count)</span>
+                                <input type="number" id="gfPlusOnes" min="0" max="20" value="0">
+                            </label>
+                            <label class="grow">
+                                <span>Plus-one names</span>
+                                <input type="text" id="gfPlusOneNames" placeholder="e.g. Wife · 2 kids" maxlength="120">
+                            </label>
+                        </div>
+                        <div class="g-form-row">
+                            <label class="grow">
+                                <span>Response notes</span>
+                                <textarea id="gfRsvpNotes" rows="2" placeholder="Anything they mentioned in their reply…" maxlength="400"></textarea>
+                            </label>
+                        </div>
+                        <div class="g-form-row">
+                            <label class="g-toggle">
+                                <input type="checkbox" id="gfInvitationSent">
+                                <span class="g-toggle-track"></span>
+                                <span class="g-toggle-label">Invitation sent</span>
+                            </label>
+                            <label class="g-toggle">
+                                <input type="checkbox" id="gfCheckedIn">
+                                <span class="g-toggle-track"></span>
+                                <span class="g-toggle-label">Checked in at venue</span>
+                            </label>
+                            <label class="g-toggle">
+                                <input type="checkbox" id="gfGiftReceived">
+                                <span class="g-toggle-track"></span>
+                                <span class="g-toggle-label">Gift received (thank-you pending)</span>
+                            </label>
+                        </div>
+                    </section>
+
+                    <!-- TAB: EVENTS -->
+                    <section class="g-tab-panel" data-panel="events">
+                        <p class="g-tab-hint">Tick the functions this guest will attend.</p>
+                        <div class="g-events-grid" id="gfEvents"></div>
+                    </section>
+
+                    <!-- TAB: STAY & TRAVEL -->
+                    <section class="g-tab-panel" data-panel="stay">
+                        <h4 class="g-tab-h">Accommodation</h4>
+                        <div class="g-form-row">
+                            <label class="g-toggle">
+                                <input type="checkbox" id="gfStayNeeded">
+                                <span class="g-toggle-track"></span>
+                                <span class="g-toggle-label">Needs accommodation</span>
+                            </label>
+                        </div>
+                        <div class="g-form-row">
+                            <label class="grow">
+                                <span>Hotel</span>
+                                <input type="text" id="gfStayHotel" placeholder="e.g. Hotel Tapi Inn" maxlength="80">
+                            </label>
+                            <label>
+                                <span>Room</span>
+                                <input type="text" id="gfStayRoom" placeholder="204" maxlength="20">
+                            </label>
+                        </div>
+                        <div class="g-form-row">
+                            <label>
+                                <span>Check-in</span>
+                                <input type="date" id="gfStayCheckIn">
+                            </label>
+                            <label>
+                                <span>Check-out</span>
+                                <input type="date" id="gfStayCheckOut">
+                            </label>
+                        </div>
+
+                        <h4 class="g-tab-h">Travel</h4>
+                        <div class="g-form-row">
+                            <label class="grow">
+                                <span>Mode</span>
+                                <div class="g-seg" data-bind="gfTravelMode">
+                                    <button type="button" data-val="">None</button>
+                                    <button type="button" data-val="flight">Flight</button>
+                                    <button type="button" data-val="train">Train</button>
+                                    <button type="button" data-val="car">Car</button>
+                                    <button type="button" data-val="bus">Bus</button>
+                                </div>
+                                <input type="hidden" id="gfTravelMode" value="">
+                            </label>
+                        </div>
+                        <div class="g-form-row">
+                            <label class="grow">
+                                <span>Arrival details</span>
+                                <input type="text" id="gfTravelArrival" placeholder="e.g. 21 Jul · 18:40 · Indore Airport" maxlength="100">
+                            </label>
+                            <label class="grow">
+                                <span>Departure details</span>
+                                <input type="text" id="gfTravelDeparture" placeholder="e.g. 23 Jul · 11:00 · Indore Airport" maxlength="100">
+                            </label>
+                        </div>
+                        <div class="g-form-row">
+                            <label class="g-toggle">
+                                <input type="checkbox" id="gfPickupNeeded">
+                                <span class="g-toggle-track"></span>
+                                <span class="g-toggle-label">Needs pickup arranged</span>
+                            </label>
+                            <label class="grow">
+                                <span>Pickup notes</span>
+                                <input type="text" id="gfPickupNotes" placeholder="e.g. Pick up at 19:00, sedan, 2 bags" maxlength="120">
+                            </label>
+                        </div>
+                    </section>
+
+                    <!-- TAB: DIET & NOTES -->
+                    <section class="g-tab-panel" data-panel="other">
+                        <div class="g-form-row">
+                            <label class="grow">
+                                <span>Dietary preference</span>
+                                <div class="g-seg" data-bind="gfDietary">
+                                    <button type="button" data-val="veg">Veg</button>
+                                    <button type="button" data-val="non-veg">Non-veg</button>
+                                    <button type="button" data-val="jain">Jain</button>
+                                    <button type="button" data-val="vegan">Vegan</button>
+                                    <button type="button" data-val="eggetarian">Eggetarian</button>
+                                </div>
+                                <input type="hidden" id="gfDietary" value="veg">
+                            </label>
+                        </div>
+                        <div class="g-form-row">
+                            <label class="grow">
+                                <span>Allergies / restrictions</span>
+                                <input type="text" id="gfAllergies" placeholder="e.g. No nuts, lactose-intolerant" maxlength="120">
+                            </label>
+                        </div>
+                        <div class="g-form-row">
+                            <label class="grow">
+                                <span>Private notes</span>
+                                <textarea id="gfNotes" rows="3" placeholder="Anything else worth remembering about this guest…" maxlength="600"></textarea>
+                            </label>
+                        </div>
+                        <div class="g-form-row">
+                            <label class="grow">
+                                <span>Tags (comma separated)</span>
+                                <input type="text" id="gfTags" placeholder="e.g. VIP, classmate, gift-not-yet" maxlength="120">
+                            </label>
+                        </div>
+                    </section>
+
+                    <footer class="g-modal-foot">
+                        <button type="button" class="ghost-btn" id="deleteGuestBtn" hidden>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M19 7l-1 12a2 2 0 01-2 2H8a2 2 0 01-2-2L5 7M10 11v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3M4 7h16"/></svg>
+                            Delete guest
+                        </button>
+                        <div class="g-modal-foot-right">
+                            <button type="button" class="ghost-btn" data-close>Cancel</button>
+                            <button type="submit" class="primary-btn">Save guest</button>
+                        </div>
+                    </footer>
+                </form>
+            </div>
+        </div>
+
+        <!-- ==================== CSV IMPORT MODAL ==================== -->
+        <div class="g-modal" id="importModal" hidden role="dialog" aria-modal="true">
+            <div class="g-modal-backdrop" data-close></div>
+            <div class="g-modal-shell g-modal-shell-sm">
+                <header class="g-modal-head">
+                    <h2>Import CSV</h2>
+                    <button type="button" class="g-modal-close" data-close aria-label="Close">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </header>
+                <div class="g-import-body">
+                    <p>Drop a <code>.csv</code> file below, or paste rows directly. We accept the same columns we export — easiest way is to download an export first.</p>
+                    <div class="g-drop" id="csvDrop">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 3v4a1 1 0 001 1h4M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/><path d="M9 13l3 3 3-3M12 16V9"/></svg>
+                        <strong>Click or drop a CSV here</strong>
+                        <span>Required column: <code>name</code>. All others are optional.</span>
+                        <input type="file" id="csvFile" accept=".csv,text/csv" hidden>
+                    </div>
+                    <details class="g-import-paste">
+                        <summary>…or paste CSV text</summary>
+                        <textarea id="csvPaste" rows="6" placeholder="name,phone,side,rsvp,events,plusOnes&#10;Rajesh Patil,+919876543210,bride,confirmed,haldi|sangeet|wedding,2"></textarea>
+                        <button class="ghost-btn" id="csvPasteBtn">Import pasted rows</button>
+                    </details>
+                    <div class="g-import-status" id="importStatus" hidden></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== QR MODAL ==================== -->
+        <div class="g-modal" id="qrModal" hidden role="dialog" aria-modal="true">
+            <div class="g-modal-backdrop" data-close></div>
+            <div class="g-modal-shell g-modal-shell-sm g-qr-shell">
+                <header class="g-modal-head">
+                    <h2>Check-in QR</h2>
+                    <button type="button" class="g-modal-close" data-close aria-label="Close">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </header>
+                <div class="g-qr-body">
+                    <div class="g-qr-frame">
+                        <img id="qrImage" alt="Guest QR code">
+                    </div>
+                    <h3 id="qrName">Guest name</h3>
+                    <p id="qrMeta">Side · Relation</p>
+                    <div class="g-qr-actions">
+                        <button class="ghost-btn" id="qrDownloadBtn">Download PNG</button>
+                        <button class="ghost-btn" id="qrCopyBtn">Copy link</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast (reuses admin.css .toast) -->
+        <div class="toast" id="toast">
+            <span class="toast-icon">✓</span>
+            <span class="toast-msg" id="toastMsg">Saved</span>
+        </div>
+    </div>
+
+    <script>window.WEDDING_RT_CONFIG = { disableTracking: true };</script>
+    <script src="realtime.js" defer></script>
+    <script src="guests.js" defer></script>
+</body>
+</html>
