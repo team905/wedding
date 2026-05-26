@@ -1,5 +1,8 @@
 .deploy/
-.deploy_domain
+.git/
+.gitignore
 .DS_Store
 node_modules/
 preview/
+*.md
+.surgeignore
