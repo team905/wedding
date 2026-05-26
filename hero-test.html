@@ -16,6 +16,32 @@
         /* Compact preview hero (so the switcher panel is visible at once) */
         .hero { min-height: 100svh; }
 
+        /* ===== Floating "toggle" pill (shown on mobile, hidden on desktop) ===== */
+        .ht-toggle {
+            position: fixed;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 220;
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.55rem 1.1rem;
+            background: rgba(8, 5, 3, 0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(212,175,55,0.40);
+            border-radius: 999px;
+            color: #f5d9a6;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.84rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+        .ht-toggle svg { width: 14px; height: 14px; transition: transform 0.2s; }
+        .ht-toggle.open svg { transform: rotate(180deg); }
+
         /* ===== Switcher panel ===== */
         .ht-panel {
             position: fixed;
@@ -167,17 +193,63 @@
                 0 2px 12px rgba(0,0,0,0.45);
         }
 
-        @media (max-width: 700px) {
-            .ht-panel { gap: 0.3rem; padding: 0.4rem 0.5rem; }
-            .ht-btn { padding: 0.4rem 0.7rem; font-size: 0.72rem; }
-            .ht-label { font-size: 0.82rem; top: 78px; }
+        @media (max-width: 760px) {
+            .ht-toggle { display: inline-flex; }
+
+            .ht-panel {
+                top: 64px;
+                gap: 0.35rem;
+                padding: 0.55rem 0.7rem;
+                max-width: calc(100vw - 16px);
+                max-height: calc(100vh - 160px);
+                transform: translate(-50%, -12px);
+                opacity: 0;
+                pointer-events: none;
+                visibility: hidden;
+                transition: transform 0.22s ease, opacity 0.18s ease, visibility 0s linear 0.22s;
+            }
+            .ht-panel.open {
+                transform: translateX(-50%);
+                opacity: 1;
+                pointer-events: auto;
+                visibility: visible;
+                transition: transform 0.22s ease, opacity 0.22s ease, visibility 0s;
+            }
+            .ht-group-label { width: 100%; text-align: center; padding-bottom: 0.1rem; }
+            .ht-btn { padding: 0.42rem 0.78rem; font-size: 0.74rem; }
+
+            .ht-label {
+                bottom: 78px;
+                font-size: 0.82rem;
+                padding: 0.45rem 1rem;
+            }
         }
+
+        /* Tap-anywhere scrim that closes the open panel on mobile */
+        .ht-scrim {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 190;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.18s ease;
+        }
+        .ht-scrim.open { opacity: 1; pointer-events: auto; }
+        @media (min-width: 761px) { .ht-scrim { display: none !important; } }
     </style>
 </head>
 <body>
 
+    <!-- Mobile toggle pill -->
+    <button class="ht-toggle" id="htToggle" aria-label="Show hero options" aria-expanded="false" aria-controls="htPanel">
+        <span id="htToggleLabel">Choose hero</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </button>
+    <div class="ht-scrim" id="htScrim"></div>
+
     <!-- Switcher -->
-    <div class="ht-panel" role="tablist" aria-label="Choose hero background">
+    <div class="ht-panel" id="htPanel" role="tablist" aria-label="Choose hero background">
         <div class="ht-group">
             <span class="ht-group-label">NEW · choose one of 10</span>
             <button class="ht-btn ht-fresh" data-opt="P1"  role="tab">1 · Couple · Hindu</button>
@@ -297,9 +369,33 @@
             btns.forEach(b => b.classList.toggle('active', b.dataset.opt === id));
             localStorage.setItem('sv_hero_opt', id);
             history.replaceState(null, '', `?opt=${id}`);
+            refreshToggleLabel(id);
         }
 
-        btns.forEach(b => b.addEventListener('click', () => applyOption(b.dataset.opt)));
+        // === Mobile panel show/hide ===
+        const panel  = document.getElementById('htPanel');
+        const toggle = document.getElementById('htToggle');
+        const scrim  = document.getElementById('htScrim');
+        const tLabel = document.getElementById('htToggleLabel');
+        const isMobile = () => window.matchMedia('(max-width: 760px)').matches;
+
+        function openPanel()  { panel.classList.add('open');  scrim.classList.add('open');  toggle.classList.add('open');  toggle.setAttribute('aria-expanded', 'true'); }
+        function closePanel() { panel.classList.remove('open'); scrim.classList.remove('open'); toggle.classList.remove('open'); toggle.setAttribute('aria-expanded', 'false'); }
+
+        toggle.addEventListener('click', () => {
+            panel.classList.contains('open') ? closePanel() : openPanel();
+        });
+        scrim.addEventListener('click', closePanel);
+
+        btns.forEach(b => b.addEventListener('click', () => {
+            applyOption(b.dataset.opt);
+            if (isMobile()) closePanel();
+        }));
+
+        function refreshToggleLabel(id) {
+            const o = OPTIONS[id];
+            if (o) tLabel.textContent = o.name.length > 22 ? o.name.slice(0, 22) + '…' : o.name;
+        }
 
         // Deploy button: posts the choice as a hash so admin can confirm
         document.getElementById('deployBtn').addEventListener('click', () => {
