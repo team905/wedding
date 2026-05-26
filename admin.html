@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0a0a">
+    <title>Admin · S&V Wedding Live</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body class="admin-body">
+
+    <!-- Lock screen -->
+    <div class="lock-screen" id="lockScreen">
+        <div class="lock-card">
+            <div class="lock-emblem">S<i>&amp;</i>V</div>
+            <h1>Wedding Live · Admin</h1>
+            <p>Enter the host passphrase to broadcast updates to guests.</p>
+            <form id="lockForm">
+                <input type="password" id="lockInput" placeholder="Passphrase" autocomplete="current-password" required>
+                <button type="submit">Unlock</button>
+            </form>
+            <p class="lock-hint">Hint: <code>baraat2026</code></p>
+        </div>
+    </div>
+
+    <!-- Main dashboard -->
+    <div class="admin-shell" id="adminShell" hidden>
+
+        <header class="admin-top">
+            <div class="admin-top-left">
+                <div class="admin-logo">S<i>&amp;</i>V</div>
+                <div>
+                    <strong>Wedding Live Control</strong>
+                    <span class="admin-sub">22 July 2026 · Samarth Lawns, Jalgaon</span>
+                </div>
+            </div>
+            <div class="admin-top-right">
+                <div class="live-indicator"><span class="live-dot"></span>LIVE</div>
+                <a class="admin-link" href="index.html" target="_blank" rel="noopener">View Guest Site →</a>
+                <button class="admin-link admin-link-danger" id="logoutBtn">Lock</button>
+            </div>
+        </header>
+
+        <main class="admin-main">
+
+            <!-- Audience stats -->
+            <section class="admin-card stats-card">
+                <header class="admin-card-head admin-card-head-flex">
+                    <div>
+                        <h2>Audience</h2>
+                        <p>Live counts of who has been on the site and who is watching the feed.</p>
+                    </div>
+                    <button class="ghost-btn" id="refreshStatsBtn" title="Refresh now">↻ Refresh</button>
+                </header>
+                <div class="stats-grid">
+                    <div class="stat-tile">
+                        <div class="stat-label">Total page views</div>
+                        <div class="stat-value" id="statVisits">—</div>
+                        <div class="stat-sub">Counts every time the site is opened.</div>
+                    </div>
+                    <div class="stat-tile">
+                        <div class="stat-label">Unique guests</div>
+                        <div class="stat-value" id="statUnique">—</div>
+                        <div class="stat-sub">Distinct devices that have ever visited.</div>
+                    </div>
+                    <div class="stat-tile">
+                        <div class="stat-label">Checked the feed</div>
+                        <div class="stat-value" id="statViewers">—</div>
+                        <div class="stat-sub">Guests who actually opened "Live from the wedding."</div>
+                    </div>
+                    <div class="stat-tile stat-tile-accent">
+                        <div class="stat-label">Notifications on</div>
+                        <div class="stat-value" id="statNotif">—</div>
+                        <div class="stat-sub">Devices that will get a push for every new update.</div>
+                    </div>
+                </div>
+                <p class="stats-foot" id="statsFoot">Auto-refreshes every 30 s · last updated <span id="statsAt">never</span></p>
+            </section>
+
+            <!-- Quick actions -->
+            <section class="admin-card">
+                <header class="admin-card-head">
+                    <h2>Quick Broadcast</h2>
+                    <p>One tap pushes a status update to every guest watching the site.</p>
+                </header>
+
+                <div class="quick-grid" id="quickGrid">
+                    <!-- populated by JS -->
+                </div>
+            </section>
+
+            <!-- Custom update -->
+            <section class="admin-card">
+                <header class="admin-card-head">
+                    <h2>Custom Message</h2>
+                    <p>Write your own update — use it for anything not in the quick presets.</p>
+                </header>
+
+                <form id="customForm" class="custom-form">
+                    <div class="custom-row">
+                        <label>
+                            <span>Icon</span>
+                            <input type="text" id="cfIcon" value="📣" maxlength="3">
+                        </label>
+                        <label class="grow">
+                            <span>Message</span>
+                            <input type="text" id="cfMsg" placeholder="e.g. Bride is ready — guests please take seats" required>
+                        </label>
+                    </div>
+                    <div class="custom-row">
+                        <label class="grow">
+                            <span>Severity</span>
+                            <div class="seg" id="cfSeg">
+                                <button type="button" data-sev="info"    class="active">Info</button>
+                                <button type="button" data-sev="success">Good news</button>
+                                <button type="button" data-sev="warning">Heads-up</button>
+                                <button type="button" data-sev="urgent">Urgent</button>
+                            </div>
+                        </label>
+                        <label class="grow">
+                            <span>From (optional)</span>
+                            <input type="text" id="cfAuthor" placeholder="e.g. Bride's family">
+                        </label>
+                    </div>
+                    <button type="submit" class="primary-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                        Broadcast Update
+                    </button>
+                </form>
+            </section>
+
+            <!-- Live feed -->
+            <section class="admin-card">
+                <header class="admin-card-head admin-card-head-flex">
+                    <div>
+                        <h2>Live Feed</h2>
+                        <p>Recent broadcasts. <span id="updateCount">0</span> total.</p>
+                    </div>
+                    <button class="ghost-btn" id="clearAllBtn">Clear All</button>
+                </header>
+                <div class="feed-list" id="feedList">
+                    <p class="feed-empty">No updates yet — send your first one above.</p>
+                </div>
+            </section>
+
+        </main>
+
+        <div class="toast" id="toast">
+            <span class="toast-icon">✓</span>
+            <span class="toast-msg" id="toastMsg">Broadcast sent</span>
+        </div>
+    </div>
+
+    <script>window.WEDDING_RT_CONFIG = { disableTracking: true };</script>
+    <script src="realtime.js" defer></script>
+    <script src="admin.js" defer></script>
+</body>
+</html>

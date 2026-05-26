@@ -373,56 +373,6 @@
     document.head.appendChild(shakeStyle);
 
     /* =========================================================
-       INVITATION ENVELOPE INTRO
-       ========================================================= */
-    const intro = document.getElementById('invitationIntro');
-    const envelope = document.getElementById('envelope');
-    const inviteStars = document.getElementById('inviteStars');
-
-    if (intro) {
-        const seenIntro = sessionStorage.getItem('sv_intro_seen');
-
-        const buildStars = () => {
-            if (!inviteStars) return;
-            const frag = document.createDocumentFragment();
-            for (let i = 0; i < 40; i++) {
-                const s = document.createElement('div');
-                s.className = 'invite-star';
-                s.style.left = Math.random() * 100 + '%';
-                s.style.top = Math.random() * 100 + '%';
-                s.style.animationDelay = Math.random() * 3 + 's';
-                s.style.opacity = (0.3 + Math.random() * 0.6).toFixed(2);
-                const size = 1 + Math.random() * 2;
-                s.style.width = size + 'px';
-                s.style.height = size + 'px';
-                frag.appendChild(s);
-            }
-            inviteStars.appendChild(frag);
-        };
-
-        const openEnvelope = () => {
-            if (intro.classList.contains('opening')) return;
-            intro.classList.add('opening');
-            if (navigator.vibrate) navigator.vibrate(30);
-            setTimeout(() => {
-                intro.classList.add('opened');
-                document.body.style.overflow = '';
-            }, 2000);
-            setTimeout(() => { intro.style.display = 'none'; }, 2700);
-        };
-
-        if (!seenIntro) {
-            document.body.style.overflow = 'hidden';
-            buildStars();
-            setTimeout(() => intro.classList.add('show'), 1300);
-            sessionStorage.setItem('sv_intro_seen', '1');
-            intro.addEventListener('click', openEnvelope);
-        } else {
-            intro.style.display = 'none';
-        }
-    }
-
-    /* =========================================================
        3D CARD TILT
        ========================================================= */
     const tiltSelectors = [
@@ -880,6 +830,390 @@ Sent via the wedding website. Please confirm the pickup. Thank you 🙏`;
             downloadICS('wedding');
             if (typeof showToast === 'function') showToast('Reminder added to calendar');
         });
+    }
+
+    /* =========================================================
+       LIVE UPDATES (admin → guests, real-time)
+       ========================================================= */
+    const RT = window.WeddingRealtime;
+    if (RT) {
+        const liveBanner    = document.getElementById('liveBanner');
+        const lbIcon        = document.getElementById('liveBannerIcon');
+        const lbMsg         = document.getElementById('liveBannerMsg');
+        const lbMeta        = document.getElementById('liveBannerMeta');
+        const lbClose       = document.getElementById('liveBannerClose');
+        const updatesList   = document.getElementById('updatesList');
+        const navLiveBadge  = document.getElementById('navLiveBadge');
+
+        const LAST_SEEN_KEY = 'sv_last_seen_update';
+        let lastSeenAt = parseInt(localStorage.getItem(LAST_SEEN_KEY) || '0', 10);
+        let bannerTimer = null;
+        let bannerDismissed = new Set();
+        let renderedKnown = false;
+        let firstRenderTs = Date.now();
+
+        const fmtRelative = (t) => {
+            const diff = Math.floor((Date.now() - t) / 1000);
+            if (diff < 30) return 'just now';
+            if (diff < 60) return diff + ' sec ago';
+            if (diff < 3600) return Math.floor(diff/60) + ' min ago';
+            if (diff < 86400) return Math.floor(diff/3600) + ' hr ago';
+            return new Date(t).toLocaleString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true, day: 'numeric', month: 'short' });
+        };
+
+        const showBannerFor = (u) => {
+            if (!liveBanner) return;
+            if (bannerDismissed.has(u.id)) return;
+            lbIcon.textContent = u.icon || '📣';
+            lbMsg.textContent  = u.message;
+            lbMeta.textContent = (u.author ? u.author + ' · ' : '') + fmtRelative(u.timestamp);
+            liveBanner.dataset.sev = u.severity || 'info';
+            liveBanner.hidden = false;
+            requestAnimationFrame(() => liveBanner.classList.add('show'));
+            if (navigator.vibrate) navigator.vibrate(u.severity === 'urgent' ? [40, 60, 40] : 25);
+
+            clearTimeout(bannerTimer);
+            const duration = u.severity === 'urgent' ? 10000 : 6500;
+            bannerTimer = setTimeout(hideBanner, duration);
+        };
+        const hideBanner = () => {
+            if (!liveBanner) return;
+            liveBanner.classList.remove('show');
+            setTimeout(() => { liveBanner.hidden = true; }, 500);
+        };
+        lbClose?.addEventListener('click', () => {
+            const u = RT.getUpdates()[0];
+            if (u) bannerDismissed.add(u.id);
+            hideBanner();
+        });
+
+        const updateBadge = (list) => {
+            if (!navLiveBadge) return;
+            const unseen = list.filter(u => u.timestamp > lastSeenAt).length;
+            if (unseen > 0) {
+                navLiveBadge.hidden = false;
+                navLiveBadge.textContent = unseen > 9 ? '9+' : unseen;
+            } else {
+                navLiveBadge.hidden = true;
+            }
+        };
+
+        const renderUpdates = (list) => {
+            if (!updatesList) return;
+
+            if (!list.length) {
+                updatesList.innerHTML = `
+                    <div class="updates-empty">
+                        <div class="updates-empty-icon">⏳</div>
+                        <strong>No updates yet</strong>
+                        <p>This feed will light up once the day begins. Pull-to-refresh anytime.</p>
+                    </div>`;
+                updateBadge([]);
+                return;
+            }
+
+            const escape = (s) => String(s).replace(/[&<>"']/g, c => ({
+                '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'
+            }[c]));
+
+            updatesList.innerHTML = list.map(u => {
+                const isNew = u.timestamp > lastSeenAt && renderedKnown;
+                return `
+                    <article class="update-item ${isNew ? 'is-new' : ''}" data-sev="${u.severity || 'info'}" data-id="${u.id}">
+                        <div class="update-icon">${u.icon || '📣'}</div>
+                        <div class="update-body">
+                            <p>${escape(u.message)}</p>
+                            <span class="update-time">${fmtRelative(u.timestamp)}</span>
+                            ${u.author ? `<span class="update-author">· ${escape(u.author)}</span>` : ''}
+                        </div>
+                    </article>`;
+            }).join('');
+
+            // Latest one — if new since last visit, show banner
+            const top = list[0];
+            if (top && top.timestamp > lastSeenAt && renderedKnown && top.timestamp > firstRenderTs - 1000) {
+                showBannerFor(top);
+            }
+
+            updateBadge(list);
+            renderedKnown = true;
+        };
+
+        RT.onUpdates(renderUpdates);
+
+        // Auto-tick relative timestamps every minute
+        setInterval(() => {
+            document.querySelectorAll('.update-item').forEach(el => {
+                const id = el.dataset.id;
+                const u = RT.getUpdates().find(x => x.id === id);
+                if (!u) return;
+                const t = el.querySelector('.update-time');
+                if (t) t.textContent = fmtRelative(u.timestamp);
+            });
+        }, 60_000);
+
+        // When user actually views the updates section, mark as seen
+        // and count them as an "updates viewer" in our aggregate stats.
+        const updatesSec = document.getElementById('live-updates');
+        if (updatesSec && 'IntersectionObserver' in window) {
+            new IntersectionObserver((entries) => {
+                entries.forEach(e => {
+                    if (e.isIntersecting) {
+                        const list = RT.getUpdates();
+                        if (list.length) {
+                            lastSeenAt = list[0].timestamp;
+                            localStorage.setItem(LAST_SEEN_KEY, String(lastSeenAt));
+                            updateBadge(list);
+                            document.querySelectorAll('.update-item.is-new').forEach(el => el.classList.remove('is-new'));
+                        }
+                        // Count this device as a feed-viewer (once, ever).
+                        if (typeof RT.trackUpdatesViewed === 'function') {
+                            try { RT.trackUpdatesViewed(); } catch (_) {}
+                        }
+                    }
+                });
+            }, { threshold: 0.2 }).observe(updatesSec);
+        }
+
+        // ---------- Notification opt-in CTA ----------
+        const notifCta       = document.getElementById('notifCta');
+        const notifEnableBtn = document.getElementById('notifEnableBtn');
+        const notifSkipBtn   = document.getElementById('notifSkipBtn');
+        const notifState     = document.getElementById('notifState');
+        const notifStateMsg  = document.getElementById('notifStateMsg');
+        const NOTIF_DISMISSED = 'sv_notif_cta_dismissed';
+
+        function paintNotifState() {
+            const state = RT.notificationsState ? RT.notificationsState() : 'unsupported';
+            if (state === 'unsupported') {
+                if (notifCta)   notifCta.hidden = true;
+                if (notifState) notifState.hidden = true;
+                return;
+            }
+            if (state === 'granted') {
+                if (notifCta)       notifCta.hidden = true;
+                if (notifState)     notifState.hidden = false;
+                if (notifStateMsg)  notifStateMsg.textContent = 'Alerts are on — you\'ll get a ping for every update';
+                return;
+            }
+            if (state === 'denied') {
+                if (notifCta)       notifCta.hidden = true;
+                if (notifState)     notifState.hidden = false;
+                if (notifStateMsg)  notifStateMsg.textContent = 'Notifications are blocked in your browser settings.';
+                if (notifState)     notifState.classList.add('notif-state-denied');
+                return;
+            }
+            // default — show the prompt unless the user already dismissed it
+            if (notifState) notifState.hidden = true;
+            if (localStorage.getItem(NOTIF_DISMISSED)) {
+                if (notifCta) notifCta.hidden = true;
+                return;
+            }
+            if (notifCta) notifCta.hidden = false;
+        }
+
+        notifEnableBtn?.addEventListener('click', async () => {
+            notifEnableBtn.disabled = true;
+            notifEnableBtn.textContent = 'Asking…';
+            try {
+                const r = await RT.requestNotifications();
+                if (r === 'granted' && typeof showToast === 'function') showToast('You\'re subscribed to live alerts');
+            } catch (_) {}
+            notifEnableBtn.disabled = false;
+            notifEnableBtn.textContent = 'Turn on alerts';
+            paintNotifState();
+        });
+
+        notifSkipBtn?.addEventListener('click', () => {
+            localStorage.setItem(NOTIF_DISMISSED, String(Date.now()));
+            if (notifCta) notifCta.hidden = true;
+        });
+
+        paintNotifState();
+
+        // Permission state can change when the user toggles it elsewhere
+        // — re-paint on focus.
+        window.addEventListener('focus', paintNotifState);
+    }
+
+    /* =========================================================
+       LIVE WEDDING GALLERY (photographer → guests, real-time)
+       ========================================================= */
+    if (RT) {
+        const liveGallery   = document.getElementById('liveGallery');
+        const lgCount       = document.getElementById('lgCount');
+        const lgPhotogs     = document.getElementById('lgPhotographers');
+        const lgLatestEl    = document.getElementById('lgLatest');
+        const lightbox      = document.getElementById('lightbox');
+        const lbImg         = document.getElementById('lightboxImg');
+        const lbCaption     = document.getElementById('lightboxCaption');
+        const lbCredit      = document.getElementById('lightboxCredit');
+        const lbDl          = document.getElementById('lightboxDl');
+        const lbClosePh     = document.getElementById('lightboxClose');
+        const lbPrev        = document.getElementById('lightboxPrev');
+        const lbNext        = document.getElementById('lightboxNext');
+
+        const LG_SEEN_KEY = 'sv_lg_seen_count';
+        let lgLastSeenCount = parseInt(localStorage.getItem(LG_SEEN_KEY) || '0', 10);
+        let photoCache = [];
+        let lbIndex = 0;
+        let lbRendered = false;
+        let firstLgRender = Date.now();
+
+        const fmtRel = (t) => {
+            const d = Math.floor((Date.now() - t) / 1000);
+            if (d < 30) return 'just now';
+            if (d < 60) return d + 's';
+            if (d < 3600) return Math.floor(d/60) + 'm';
+            if (d < 86400) return Math.floor(d/3600) + 'h';
+            return new Date(t).toLocaleDateString();
+        };
+        const escape = (s) => String(s).replace(/[&<>"']/g, c => ({
+            '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'
+        }[c]));
+
+        const renderLG = (list) => {
+            photoCache = list;
+            if (!liveGallery) return;
+            if (lgCount) lgCount.textContent = list.length;
+            if (lgPhotogs) lgPhotogs.textContent = new Set(list.map(p => p.photographer || 'Crew')).size || 0;
+            if (lgLatestEl) lgLatestEl.textContent = list[0] ? fmtRel(list[0].timestamp) : '—';
+
+            if (!list.length) {
+                liveGallery.innerHTML = `
+                    <div class="lg-empty">
+                        <div class="lg-empty-icon">📷</div>
+                        <strong>Photos appear here as they're captured</strong>
+                        <p>Our photography team will be uploading throughout the celebrations.</p>
+                    </div>`;
+                return;
+            }
+
+            liveGallery.innerHTML = list.map((p, i) => {
+                const isNew = lbRendered && i >= 0 && (lgLastSeenCount < list.length - i);
+                return `
+                    <button class="lg-tile ${isNew ? 'is-new' : ''}" data-idx="${i}" type="button" aria-label="View photo by ${escape(p.photographer || 'photographer')}">
+                        <img src="${p.thumb}" alt="${escape(p.caption || 'wedding photo')}" loading="lazy">
+                        <div class="lg-tile-overlay">
+                            <strong>${escape(p.photographer || 'Wedding Crew')}</strong>
+                            <span>${fmtRel(p.timestamp)}${p.caption ? ' · ' + escape(p.caption) : ''}</span>
+                        </div>
+                        <span class="lg-tile-badge">NEW</span>
+                    </button>`;
+            }).join('');
+
+            lbRendered = true;
+        };
+
+        const openLightbox = async (i) => {
+            if (!photoCache[i]) return;
+            lbIndex = i;
+            const p = photoCache[i];
+            const full = await RT.getPhotoFull(p.id);
+            const src = (full && full.full) || p.thumb;
+            lbImg.src = src;
+            lbCaption.textContent = p.caption || '';
+            lbCredit.textContent = `${p.photographer || 'Wedding Crew'} · ${new Date(p.timestamp).toLocaleString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true, day: 'numeric', month: 'short' })}`;
+            lbDl.dataset.id = p.id;
+            lbDl.dataset.fileName = (full && full.fileName) || `sv-photo-${p.id}.jpg`;
+            lightbox.hidden = false;
+            lightbox.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        };
+        const closeLightbox = () => {
+            lightbox.setAttribute('aria-hidden', 'true');
+            setTimeout(() => { lightbox.hidden = true; }, 300);
+            document.body.style.overflow = '';
+            lbImg.src = '';
+        };
+        const navLightbox = (dir) => {
+            const next = (lbIndex + dir + photoCache.length) % photoCache.length;
+            openLightbox(next);
+        };
+
+        liveGallery?.addEventListener('click', (e) => {
+            const tile = e.target.closest('.lg-tile');
+            if (!tile) return;
+            openLightbox(parseInt(tile.dataset.idx, 10));
+            if (navigator.vibrate) navigator.vibrate(10);
+        });
+        lbClosePh?.addEventListener('click', closeLightbox);
+        lbPrev?.addEventListener('click', () => navLightbox(-1));
+        lbNext?.addEventListener('click', () => navLightbox(1));
+        lightbox?.addEventListener('click', (e) => {
+            if (e.target === lightbox) closeLightbox();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (lightbox?.hidden) return;
+            if (e.key === 'Escape') closeLightbox();
+            else if (e.key === 'ArrowRight') navLightbox(1);
+            else if (e.key === 'ArrowLeft') navLightbox(-1);
+        });
+        lbDl?.addEventListener('click', async () => {
+            const id = lbDl.dataset.id;
+            const full = await RT.getPhotoFull(id);
+            if (!full) {
+                if (typeof showToast === 'function') showToast('Photo not available');
+                return;
+            }
+            const name = lbDl.dataset.fileName || `sv-photo-${id}.jpg`;
+
+            // Local data URL → direct download
+            if (full.full && full.full.startsWith('data:')) {
+                const a = document.createElement('a');
+                a.href = full.full;
+                a.download = name;
+                document.body.appendChild(a); a.click(); a.remove();
+            } else if (full.full) {
+                // Remote URL → fetch as blob, then download (forces save vs open)
+                try {
+                    const r = await fetch(full.full);
+                    const blob = await r.blob();
+                    const blobUrl = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = blobUrl;
+                    a.download = name;
+                    document.body.appendChild(a); a.click(); a.remove();
+                    setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
+                } catch (e) {
+                    // Last-resort: open in new tab
+                    window.open(full.full, '_blank');
+                }
+            }
+            if (typeof showToast === 'function') showToast('Photo saved');
+            if (navigator.vibrate) navigator.vibrate(20);
+        });
+
+        // Touch swipe in lightbox
+        let touchStartX = null;
+        lightbox?.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
+        lightbox?.addEventListener('touchend', (e) => {
+            if (touchStartX == null) return;
+            const dx = e.changedTouches[0].clientX - touchStartX;
+            if (Math.abs(dx) > 60) navLightbox(dx > 0 ? -1 : 1);
+            touchStartX = null;
+        }, { passive: true });
+
+        RT.onPhotos(renderLG);
+
+        // Mark gallery as seen when scrolled into view
+        const lgSec = document.getElementById('live-gallery');
+        if (lgSec && 'IntersectionObserver' in window) {
+            new IntersectionObserver((entries) => {
+                entries.forEach(e => {
+                    if (e.isIntersecting) {
+                        lgLastSeenCount = photoCache.length;
+                        localStorage.setItem(LG_SEEN_KEY, String(lgLastSeenCount));
+                        document.querySelectorAll('.lg-tile.is-new').forEach(el => el.classList.remove('is-new'));
+                    }
+                });
+            }, { threshold: 0.15 }).observe(lgSec);
+        }
+
+        // Auto-refresh relative times
+        setInterval(() => {
+            if (lgLatestEl && photoCache[0]) lgLatestEl.textContent = fmtRel(photoCache[0].timestamp);
+        }, 30_000);
     }
 
     /* =========================================================

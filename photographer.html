@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0a0a">
+    <title>Media · S&V Wedding Live</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body class="admin-body">
+
+    <!-- Lock screen -->
+    <div class="lock-screen" id="lockScreen">
+        <div class="lock-card">
+            <div class="lock-emblem">📸</div>
+            <h1>Live Photo Upload</h1>
+            <p>For the on-site photography team. Photos appear in the guest gallery instantly.</p>
+            <form id="lockForm">
+                <input type="text" id="photographerName" placeholder="Your name (shown as credit)" required>
+                <input type="password" id="lockInput" placeholder="Crew passphrase" required>
+                <button type="submit">Start Uploading</button>
+            </form>
+            <p class="lock-hint">Hint: <code>shutterbug</code></p>
+        </div>
+    </div>
+
+    <!-- Upload dashboard -->
+    <div class="admin-shell" id="adminShell" hidden>
+
+        <header class="admin-top">
+            <div class="admin-top-left">
+                <div class="admin-logo">📸</div>
+                <div>
+                    <strong>Live Media Crew</strong>
+                    <span class="admin-sub">Signed in as <em id="currentName">—</em></span>
+                </div>
+            </div>
+            <div class="admin-top-right">
+                <div class="live-indicator"><span class="live-dot"></span>STREAMING</div>
+                <a class="admin-link" href="index.html" target="_blank" rel="noopener">View Guest Site →</a>
+                <button class="admin-link admin-link-danger" id="logoutBtn">Sign out</button>
+            </div>
+        </header>
+
+        <main class="admin-main">
+
+            <!-- Drop zone -->
+            <section class="admin-card">
+                <header class="admin-card-head">
+                    <h2>Upload Photos</h2>
+                    <p>Drop, pick or shoot. Photos compress on-device then publish live to guests.</p>
+                </header>
+
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-zone-inner">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 16v2a2 2 0 002 2h14a2 2 0 002-2v-2M17 8l-5-5-5 5M12 3v12"/></svg>
+                        <strong>Drop photos here, or click to choose</strong>
+                        <span>Multiple JPG/PNG · auto-compressed to 1600px max</span>
+                    </div>
+                    <input type="file" id="fileInput" accept="image/*" multiple hidden>
+                </div>
+
+                <div class="upload-actions">
+                    <label class="cap-input">
+                        <span>Caption (applies to all selected)</span>
+                        <input type="text" id="captionInput" placeholder="e.g. Baraat at the gate · #ShubhamWedsVaibhavi">
+                    </label>
+                    <label class="cam-pill">
+                        <input type="file" id="cameraInput" accept="image/*" capture="environment" hidden>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 7h4l2-3h6l2 3h4a1 1 0 011 1v11a2 2 0 01-2 2H4a2 2 0 01-2-2V8a1 1 0 011-1z"/><circle cx="12" cy="13" r="4"/></svg>
+                        Open Camera
+                    </label>
+                </div>
+
+                <div class="upload-queue" id="uploadQueue"></div>
+            </section>
+
+            <!-- Live photos grid -->
+            <section class="admin-card">
+                <header class="admin-card-head admin-card-head-flex">
+                    <div>
+                        <h2>Published Photos</h2>
+                        <p><span id="photoCount">0</span> photos live · guests can download any</p>
+                    </div>
+                    <button class="ghost-btn" id="clearAllPhotosBtn">Clear All</button>
+                </header>
+                <div class="media-grid" id="mediaGrid">
+                    <p class="feed-empty">No photos yet — drop your first shot above.</p>
+                </div>
+            </section>
+        </main>
+
+        <div class="toast" id="toast">
+            <span class="toast-icon">✓</span>
+            <span class="toast-msg" id="toastMsg">Uploaded</span>
+        </div>
+    </div>
+
+    <script>window.WEDDING_RT_CONFIG = { disableTracking: true };</script>
+    <script src="realtime.js" defer></script>
+    <script src="photographer.js" defer></script>
+</body>
+</html>

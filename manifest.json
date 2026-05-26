@@ -1,0 +1,26 @@
+{
+    "name": "Shubham weds Vaibhavi",
+    "short_name": "S × V Wedding",
+    "description": "Live invitation, schedule, stay & on-the-day updates for the Shubham × Vaibhavi wedding.",
+    "start_url": "/?src=pwa",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "portrait",
+    "background_color": "#661b29",
+    "theme_color": "#661b29",
+    "lang": "en",
+    "categories": ["events", "lifestyle", "social"],
+    "icons": [
+        { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+        { "src": "/icons/icon-256.png", "sizes": "256x256", "type": "image/png" },
+        { "src": "/icons/icon-384.png", "sizes": "384x384", "type": "image/png" },
+        { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+        { "src": "/icons/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+        { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    ],
+    "shortcuts": [
+        { "name": "Live updates", "short_name": "Live", "url": "/#live-updates", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
+        { "name": "Wedding schedule", "short_name": "Schedule", "url": "/#events" },
+        { "name": "RSVP", "short_name": "RSVP", "url": "/#rsvp" }
+    ]
+}
