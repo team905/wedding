@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0a0a">
+    <title>Hero Background Test · S&V Wedding</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        body { background: #0a0a0a; }
+
+        /* Compact preview hero (so the switcher panel is visible at once) */
+        .hero { min-height: 100svh; }
+
+        /* ===== Switcher panel ===== */
+        .ht-panel {
+            position: fixed;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 200;
+            display: flex;
+            gap: 0.4rem;
+            padding: 0.5rem 0.6rem;
+            background: rgba(8, 5, 3, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(212,175,55,0.30);
+            border-radius: 999px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: calc(100vw - 24px);
+        }
+        .ht-btn {
+            padding: 0.45rem 0.85rem;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 999px;
+            color: #e7e3da;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.18s;
+            white-space: nowrap;
+        }
+        .ht-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
+        .ht-btn.active {
+            background: linear-gradient(135deg, #c1440e, #e86c24);
+            border-color: rgba(212,175,55,0.6);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(193,68,14,0.45);
+        }
+        .ht-label {
+            position: fixed;
+            top: 64px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 200;
+            padding: 0.5rem 1.2rem;
+            background: rgba(8, 5, 3, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(212,175,55,0.30);
+            border-radius: 999px;
+            color: #f5d9a6;
+            font-family: 'Playfair Display', serif;
+            font-size: 0.92rem;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            max-width: calc(100vw - 24px);
+        }
+        .ht-label small {
+            display: block;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.55);
+            margin-top: 0.15rem;
+            letter-spacing: 0.05em;
+            font-style: normal;
+        }
+        .ht-deploy {
+            position: fixed;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 200;
+            padding: 0.7rem 1.4rem;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            border: none;
+            border-radius: 999px;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(34, 197, 94, 0.35);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .ht-deploy:hover { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(34, 197, 94, 0.45); }
+        .ht-deploy:active { transform: scale(0.97); }
+        .ht-deploy svg { width: 14px; height: 14px; }
+
+        /* Extra dark scrim on the hero so welcome text is always readable
+           regardless of which background is loaded.  This is on top of the
+           gradient in styles.css and gives us a guaranteed-legible canvas
+           for the testing page.                                                 */
+        .hero-bg::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 22% 78%, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 60%),
+                linear-gradient(to right, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.20) 35%, rgba(0,0,0,0) 60%);
+            pointer-events: none;
+            z-index: 1;
+        }
+        .hero-body { z-index: 2; }
+
+        /* Strengthen text shadows for guaranteed legibility */
+        .hero-blessing,
+        .hero-name,
+        .hero-and,
+        .hero-location,
+        .hero-badge span {
+            text-shadow:
+                0 1px 4px rgba(0,0,0,0.75),
+                0 2px 12px rgba(0,0,0,0.45);
+        }
+
+        @media (max-width: 700px) {
+            .ht-panel { gap: 0.3rem; padding: 0.4rem 0.5rem; }
+            .ht-btn { padding: 0.4rem 0.7rem; font-size: 0.72rem; }
+            .ht-label { font-size: 0.82rem; top: 78px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Switcher -->
+    <div class="ht-panel" role="tablist" aria-label="Choose hero background">
+        <button class="ht-btn" data-opt="1" role="tab">1 · Namaste</button>
+        <button class="ht-btn" data-opt="2" role="tab">2 · Tunnel</button>
+        <button class="ht-btn" data-opt="3" role="tab">3 · Forest</button>
+        <button class="ht-btn" data-opt="4" role="tab">4 · Smoke Arch</button>
+        <button class="ht-btn" data-opt="5" role="tab">5 · Day Mandap</button>
+        <button class="ht-btn" data-opt="6" role="tab">6 · Bokeh</button>
+    </div>
+    <div class="ht-label" id="htLabel">
+        Loading…
+        <small id="htSub"></small>
+    </div>
+
+    <!-- Hero (same markup as index.html) -->
+    <section id="home" class="hero">
+        <div class="hero-bg">
+            <picture id="heroPic">
+                <source media="(min-width: 900px)" srcset="assets/hero-opt4-arch-desktop.jpg" id="heroSrc">
+                <img src="assets/hero-opt4-arch-mobile.jpg" alt="Wedding background" class="hero-bg-img" id="heroImg">
+            </picture>
+            <div class="hero-bg-overlay"></div>
+            <div class="hero-mandap-border"></div>
+        </div>
+        <div class="hero-body">
+            <div class="hero-badge"><span>शुभ विवाह · Shubh Vivah</span></div>
+            <div class="hero-blessings">
+                <p class="hero-blessing">॥ श्री गणेशाय नमः ॥</p>
+                <p class="hero-blessing">॥ नागाई माता प्रसन्न ॥</p>
+                <p class="hero-blessing">॥ श्री स्वामी समर्थ ॥</p>
+            </div>
+            <h1 class="hero-title">
+                <span class="hero-name">Shubham</span>
+                <span class="hero-and">&</span>
+                <span class="hero-name">Vaibhavi</span>
+            </h1>
+            <p class="hero-location">Jalgaon, Maharashtra</p>
+            <div class="hero-countdown">
+                <div class="cd-block"><span class="cd-num">209</span><span class="cd-label">days</span></div>
+                <div class="cd-sep">·</div>
+                <div class="cd-block"><span class="cd-num">18</span><span class="cd-label">hrs</span></div>
+                <div class="cd-sep">·</div>
+                <div class="cd-block"><span class="cd-num">42</span><span class="cd-label">min</span></div>
+                <div class="cd-sep">·</div>
+                <div class="cd-block"><span class="cd-num">07</span><span class="cd-label">sec</span></div>
+            </div>
+            <a href="javascript:void(0)" class="hero-btn">
+                Confirm Your Presence
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </a>
+        </div>
+    </section>
+
+    <button class="ht-deploy" id="deployBtn" title="Set this option as the live hero">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+        Use this one as my hero
+    </button>
+
+    <script>
+        const OPTIONS = {
+            '1': { slug: 'hero-opt1-namaste',  name: 'Option 1 · Couple Namaste',  note: 'Maharashtrian feel · visible iStock watermark on the right' },
+            '2': { slug: 'hero-opt2-tunnel',   name: 'Option 2 · Purple Mandap Tunnel', note: 'Dark and dramatic · text reads excellently' },
+            '3': { slug: 'hero-opt3-forest',   name: 'Option 3 · Sunlit Forest Couple', note: 'Bright daylight · stronger scrim auto-applied' },
+            '4': { slug: 'hero-opt4-arch',     name: 'Option 4 · Flower Arch · Smoke Sky', note: 'Cinematic · best text canvas of the six' },
+            '5': { slug: 'hero-opt5-mandap',   name: 'Option 5 · Daytime Pink Mandap', note: 'Bright sky · strongest scrim auto-applied' },
+            '6': { slug: 'hero-opt6-bokeh',    name: 'Option 6 · Bride Bokeh Entry', note: 'Atmospheric · bride centred on the right' }
+        };
+        const params = new URLSearchParams(location.search);
+        const initial = params.get('opt') || localStorage.getItem('sv_hero_opt') || '4';
+
+        const heroSrc = document.getElementById('heroSrc');
+        const heroImg = document.getElementById('heroImg');
+        const label   = document.getElementById('htLabel');
+        const sub     = document.getElementById('htSub');
+        const btns    = document.querySelectorAll('.ht-btn');
+
+        function applyOption(id) {
+            const o = OPTIONS[id]; if (!o) return;
+            // Pre-load to avoid flicker
+            const test = new Image();
+            test.onload = () => {
+                heroSrc.srcset = `assets/${o.slug}-desktop.jpg`;
+                heroImg.src    = `assets/${o.slug}-mobile.jpg`;
+                heroImg.alt    = o.name;
+            };
+            test.src = `assets/${o.slug}-${window.innerWidth >= 900 ? 'desktop' : 'mobile'}.jpg`;
+            label.firstChild.nodeValue = o.name;
+            sub.textContent = o.note;
+            btns.forEach(b => b.classList.toggle('active', b.dataset.opt === id));
+            localStorage.setItem('sv_hero_opt', id);
+            history.replaceState(null, '', `?opt=${id}`);
+        }
+
+        btns.forEach(b => b.addEventListener('click', () => applyOption(b.dataset.opt)));
+
+        // Deploy button: posts the choice as a hash so admin can confirm
+        document.getElementById('deployBtn').addEventListener('click', () => {
+            const id = localStorage.getItem('sv_hero_opt') || '4';
+            const o = OPTIONS[id];
+            const cmd =
+`To make "${o.name}" the live hero, change in index.html:
+
+   <source ... srcset="assets/${o.slug}-desktop.jpg">
+   <img    src="assets/${o.slug}-mobile.jpg"   ...>
+
+Files already deployed at:
+   /assets/${o.slug}-desktop.jpg
+   /assets/${o.slug}-mobile.jpg
+
+Or simply tell the agent: "use option ${id} as the hero".`;
+            alert(cmd);
+        });
+
+        applyOption(initial);
+    </script>
+</body>
+</html>
