@@ -1265,4 +1265,83 @@ Sent via the wedding website. Please confirm the pickup. Thank you 🙏`;
         });
     }
 
+    // ===== HERO MARQUEE · gold dust particles + flipboard tick =====
+    const heroCanvas = document.getElementById('heroParticles');
+    if (heroCanvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const ctx = heroCanvas.getContext('2d', { alpha: true });
+        let particles = [], W = 0, H = 0, dpr = Math.min(window.devicePixelRatio || 1, 2), raf = null;
+
+        const resize = () => {
+            const rect = heroCanvas.getBoundingClientRect();
+            W = rect.width; H = rect.height;
+            heroCanvas.width  = Math.floor(W * dpr);
+            heroCanvas.height = Math.floor(H * dpr);
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        };
+        const seed = () => {
+            const count = Math.max(28, Math.min(70, Math.round((W * H) / 28000)));
+            particles = Array.from({ length: count }, () => ({
+                x: Math.random() * W,
+                y: Math.random() * H,
+                r: Math.random() * 1.5 + 0.4,
+                vx: (Math.random() - 0.5) * 0.18,
+                vy: -(Math.random() * 0.25 + 0.05),
+                a: Math.random() * 0.5 + 0.25,
+                tw: Math.random() * Math.PI * 2,
+                ts: Math.random() * 0.04 + 0.015
+            }));
+        };
+        const step = () => {
+            ctx.clearRect(0, 0, W, H);
+            for (const p of particles) {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.tw += p.ts;
+                if (p.y < -10) { p.y = H + 10; p.x = Math.random() * W; }
+                if (p.x < -10) p.x = W + 10;
+                if (p.x > W + 10) p.x = -10;
+                const a = p.a * (0.6 + 0.4 * Math.sin(p.tw));
+                const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 6);
+                grad.addColorStop(0, `rgba(245, 217, 166, ${a})`);
+                grad.addColorStop(1, 'rgba(245, 217, 166, 0)');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r * 6, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = `rgba(255, 245, 216, ${a})`;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            raf = requestAnimationFrame(step);
+        };
+
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    if (!raf) step();
+                } else if (raf) {
+                    cancelAnimationFrame(raf); raf = null;
+                }
+            });
+        }, { threshold: 0.05 });
+
+        resize(); seed(); io.observe(heroCanvas);
+        window.addEventListener('resize', () => { resize(); seed(); }, { passive: true });
+
+        // Flipboard tick — animate the seconds digit on every change
+        const secs = document.getElementById('cd-secs');
+        if (secs) {
+            let last = secs.textContent;
+            new MutationObserver(() => {
+                if (secs.textContent !== last) {
+                    last = secs.textContent;
+                    secs.classList.remove('flip');
+                    void secs.offsetWidth;
+                    secs.classList.add('flip');
+                }
+            }).observe(secs, { characterData: true, childList: true, subtree: true });
+        }
+    }
+
 })();
